@@ -30,7 +30,7 @@ namespace WebApi_QLSV.Services.Implements
                 NganhId = input.NganhId.ToUpper(),
                 TenNganh = input.TenNganh,
                 CTKhungId = input.CTKhungId.ToUpper(),
-                InfoNganh = input.NganhId,
+                InfoNganh = input.InfoNganh,
                 KhoaId = input.KhoaId.ToUpper(),
                 SumClass = 0,
             };

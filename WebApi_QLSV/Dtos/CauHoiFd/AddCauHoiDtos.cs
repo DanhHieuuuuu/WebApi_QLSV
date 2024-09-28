@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace WebApi_QLSV.Entities
+namespace WebApi_QLSV.Dtos.CauHoiFd
 {
-    [Table(nameof(CauHoi))]
-    public class CauHoi
+    public class AddCauHoiDtos
     {
-        [Key]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string CauHoiId { get; set; }
 

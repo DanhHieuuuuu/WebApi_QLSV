@@ -4,7 +4,7 @@ using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.KhoaFd;
 using WebApi_QLSV.Services.Interfaces;
 
-namespace WebApi_QLSV.Controllers.Khoa
+namespace WebApi_QLSV.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -28,13 +28,13 @@ namespace WebApi_QLSV.Controllers.Khoa
             }
         }
         [HttpGet("/Get-all-khoa")]
-        public IActionResult GetAllKhoa([FromQuery] FilterDtos input2) 
+        public IActionResult GetAllKhoa([FromQuery] FilterDtos input2)
         {
             try
             {
                 return Ok(_khoaService.GetAllKhoa(input2));
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

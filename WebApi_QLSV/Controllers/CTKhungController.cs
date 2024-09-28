@@ -4,7 +4,7 @@ using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.CTKhungFd;
 using WebApi_QLSV.Services.Interfaces;
 
-namespace WebApi_QLSV.Controllers.CTKhung
+namespace WebApi_QLSV.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -40,11 +40,23 @@ namespace WebApi_QLSV.Controllers.CTKhung
             }
         }
         [HttpGet("/Get-all-mon-hoc-chuong-trinh-khung")]
-        public IActionResult GetAllMonHocInCTK([FromQuery] FilterDtos input3)
+        public IActionResult GetAllMonHocInCTK([FromQuery] FilterDtos input3, string id)
         {
             try
             {
-                return Ok(_ctkhungService.GetAllMonHocInCTK(input3));
+                return Ok(_ctkhungService.GetAllMonHocInCTK(input3, id));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("/get-all-mon-hoc-trong-ki")]
+        public IActionResult GetAllMonHocInKi( string nganhid )
+        {
+            try
+            {
+                return Ok(_ctkhungService.GetAllMonHocInKi(nganhid));
             }
             catch (Exception ex)
             {

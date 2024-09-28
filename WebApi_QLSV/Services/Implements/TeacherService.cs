@@ -1,8 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using WebApi_QLSV.DbContexts;
+using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.Teacher;
 using WebApi_QLSV.Entities;
+using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
 
 namespace WebApi_QLSV.Services.Implements
@@ -10,13 +16,36 @@ namespace WebApi_QLSV.Services.Implements
     public class TeacherService : ITeacherService
     {
         private readonly ApplicationDbContext _context;
+        private readonly Jwtsettings _jwtsettings;
 
-        public TeacherService(ApplicationDbContext context)
+        public TeacherService(ApplicationDbContext context, Jwtsettings jwtsettings)
         {
             _context = context;
+            _jwtsettings = jwtsettings;
         }
 
-        private static string RemoveDiacritics(string text)
+        private string Createtokens(string username)
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, username),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtsettings.SecretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _jwtsettings.Issuer,
+                audience: _jwtsettings.Audience,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(_jwtsettings.ExpiryMinutes),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string RemoveDiacritics(string text)
         {
             string[] accentedChars = new string[]
             {
@@ -197,8 +226,19 @@ namespace WebApi_QLSV.Services.Implements
             string username = normalizedFirstName + lastNameAbbreviation;
 
             string Email = username + "@huce.edu.vn";
-            string Password = name[name.Length - 1] + IdTeacher.ToString();
-
+            string Password = username + IdTeacher;
+            var findBoMon = _context.BoMons.FirstOrDefault(b => b.BoMonId == input.BoMonId)
+                ?? throw new UserExceptions($"Không tìm thấy mã bộ môn: {input.BoMonId}");
+            var findCccd = _context.Teachers.FirstOrDefault( c => c.Cccd == input.Cccd);
+            if ( findCccd != null)
+            {
+                throw new UserExceptions("Đã Tồn tại CCCD");
+            }
+            var sum = _context.Teachers.Count( t => t.BoMonId == input.BoMonId);
+            if( sum >= findBoMon.SoLuongGV )
+            {
+                throw new UserExceptions("Bộ Môn đã đủ số lượng giảng viên");
+            }
             var teacher = new Teacher
             {
                 TeacherId = IdTeacher,
@@ -211,16 +251,58 @@ namespace WebApi_QLSV.Services.Implements
                 Password = BCrypt.Net.BCrypt.HashPassword(Password),
             };
             _context.Teachers.Add(teacher);
+
             _context.SaveChanges();
             return teacher;
         }
 
-        public PageResultDtos<Teacher> GetAll([FromQuery] FilterDtos input)
+        public TeacherDtos LoginTeacher(Login input)
+        {
+            var teacher =
+                _context.Teachers.SingleOrDefault(x => x.Email == input.Email)
+                ?? throw new UserExceptions("Không tồn tại tài khoản");
+
+            bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, teacher.Password);
+            var token = Createtokens(teacher.TenGiangVien);
+
+            if (isValid)
+            {
+                var sucess = new TeacherDtos
+                {
+                    TeacherId = teacher.TeacherId,
+                    TenGiangVien = teacher.TenGiangVien,
+                    Email = teacher.Email,
+                    BoMonId = teacher.BoMonId,
+                    Cccd = teacher.Cccd,
+                    Birthday = teacher.Birthday,
+                    GioiTinh = teacher.GioiTinh,
+                    Token = token,
+                };
+                return sucess;
+            }
+            else
+            {
+                throw new UserExceptions("Không đúng mật khẩu");
+            }
+        }
+
+        public PageResultDtos<TeacherDtos> GetAll([FromQuery] FilterDtos input)
         {
             {
-                var result = new PageResultDtos<Teacher>();
-
-                var query = _context.Teachers.Where(e =>
+                var result = new PageResultDtos<TeacherDtos>();
+                var allTeacher =
+                    from teacher in _context.Teachers
+                    select new TeacherDtos
+                    {
+                        TeacherId = teacher.TeacherId,
+                        TenGiangVien = teacher.TenGiangVien,
+                        Email = teacher.Email,
+                        BoMonId = teacher.BoMonId,
+                        Cccd = teacher.Cccd,
+                        Birthday = teacher.Birthday,
+                        GioiTinh = teacher.GioiTinh,
+                    };
+                var query = allTeacher.Where(e =>
                     string.IsNullOrEmpty(input.KeyWord)
                     || e.TenGiangVien.ToLower().Contains(input.KeyWord.ToLower())
                 );

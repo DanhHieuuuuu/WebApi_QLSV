@@ -3,7 +3,7 @@ using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.NganhFd;
 using WebApi_QLSV.Services.Interfaces;
 
-namespace WebApi_QLSV.Controllers.Nganh
+namespace WebApi_QLSV.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

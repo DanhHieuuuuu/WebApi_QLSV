@@ -6,6 +6,6 @@ namespace WebApi_QLSV.Dtos.CTKhungFd
     {
         public string CTKhungId { get; set; }
         
-        public List<MonHocDtos> MonHocs { get; set; }
+        public List<AddMonHocDtos> MonHocs { get; set; }
     }
 }

@@ -5,9 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Services.Implements;
-using WebApi_QLSV.Services.Implements.StudentAndClassFd;
 using WebApi_QLSV.Services.Interfaces;
-using WebApi_QLSV.Services.Interfaces.StudentFd;
+using WebApi_QLSV.Services.Interfaces.StudentAndClassFd;
 
 namespace WebApi_QLSV
 {
@@ -49,15 +48,17 @@ namespace WebApi_QLSV
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IStudentServices, StudentServices>();
-            builder.Services.AddScoped<IClassServices, ClassService>();
             builder.Services.AddScoped<IClassStudentService, ClassStudentService>();
             builder.Services.AddScoped<ITeacherService, TeacherService>();
-            builder.Services.AddScoped<IManagerServiceFd, ManagerService>();
+            builder.Services.AddScoped<IManagerService, ManagerService>();
             builder.Services.AddScoped<IKhoaService, KhoaService>();
             builder.Services.AddScoped<ICTKhungService, CTKhungService>();
             builder.Services.AddScoped<INganhService, NganhService>();
             builder.Services.AddScoped<ILopQLService, LopQLService>();
             builder.Services.AddScoped<IBoMonService, BoMonService>();
+            builder.Services.AddScoped<IBlockService, BlockService>();
+            builder.Services.AddScoped<ILopHPService, LopHPService>();
+            builder.Services.AddScoped<ICauHoiService, CauHoiService>();
             builder.Services.AddDbContext<ApplicationDbContext>(option =>
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("Default"));

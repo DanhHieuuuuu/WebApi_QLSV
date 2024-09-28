@@ -29,7 +29,7 @@ namespace WebApi_QLSV.DbContexts
                 .Entity<Nganh>()
                 .HasOne<Khoa>()
                 .WithMany()
-                .HasForeignKey( e => e.KhoaId)
+                .HasForeignKey(e => e.KhoaId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder
                 .Entity<Nganh>()
@@ -96,7 +96,7 @@ namespace WebApi_QLSV.DbContexts
                 .Entity<MonHoc>()
                 .HasOne<CTKhung>()
                 .WithMany()
-                .HasForeignKey( e => e.CTKhungId)
+                .HasForeignKey(e => e.CTKhungId)
                 .OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }

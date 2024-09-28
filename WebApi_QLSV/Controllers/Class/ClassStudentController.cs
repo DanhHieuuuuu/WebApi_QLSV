@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApi_QLSV.Dtos.ClassStudent;
+using WebApi_QLSV.Dtos.ClassFd;
 using WebApi_QLSV.Dtos.Common;
-using WebApi_QLSV.Services.Interfaces.StudentFd;
+using WebApi_QLSV.Services.Interfaces.StudentAndClassFd;
 
 namespace WebApi_QLSV.Controllers.Class
 {
@@ -16,7 +16,7 @@ namespace WebApi_QLSV.Controllers.Class
             _classStudentService = classStudentService;
         }
         [HttpPost("/Add-student-in-class")]
-        public IActionResult AddStudentInClass(AddStudentInClassDtos input)
+        public IActionResult AddStudentInClass(AddStudentInLopHPDtos input)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace WebApi_QLSV.Controllers.Class
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet("/Get-all-student-class")]
@@ -36,7 +36,7 @@ namespace WebApi_QLSV.Controllers.Class
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
     }

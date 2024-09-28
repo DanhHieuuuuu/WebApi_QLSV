@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.Student;
 using WebApi_QLSV.Services.Interfaces;
 
-namespace WebApi_QLSV.Controllers.Student
+namespace WebApi_QLSV.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -29,7 +30,7 @@ namespace WebApi_QLSV.Controllers.Student
         }
 
         [HttpPost("/Login")]
-        public IActionResult LoginUser(LoginStudentDtos input1)
+        public IActionResult LoginUser(Login input1)
         {
             try
             {

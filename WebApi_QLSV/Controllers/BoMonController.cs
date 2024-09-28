@@ -10,10 +10,12 @@ namespace WebApi_QLSV.Controllers
     public class BoMonController : ControllerBase
     {
         private readonly IBoMonService _bomonService;
+
         public BoMonController(IBoMonService bomonService)
         {
             _bomonService = bomonService;
         }
+
         [HttpPost("/Add-bo-mon")]
         public IActionResult AddBoMon(AddBoMonDtos input)
         {
@@ -26,6 +28,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("/Get-all-bo-mon")]
         public IActionResult GetAllBoMon([FromQuery] FilterDtos input2)
         {

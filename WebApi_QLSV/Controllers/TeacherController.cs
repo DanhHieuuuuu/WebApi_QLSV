@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.Teacher;
 using WebApi_QLSV.Services.Interfaces;
 
-namespace WebApi_QLSV.Controllers.Teacher
+namespace WebApi_QLSV.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -24,21 +25,33 @@ namespace WebApi_QLSV.Controllers.Teacher
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
-        [HttpGet("/Get-all-teacher")]
-        public IActionResult GetAll(FilterDtos input2) 
+        [HttpPost("/Login-teacher")]
+        public IActionResult LogionTeacher(Login input2)
         {
             try
             {
-                return Ok(_service.GetAll(input2));
+                return Ok(_service.LoginTeacher(input2));
             }
-            catch (Exception ex) 
+            catch(Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
-        
+        [HttpGet("/Get-all-teacher")]
+        public IActionResult GetAll(FilterDtos input3)
+        {
+            try
+            {
+                return Ok(_service.GetAll(input3));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

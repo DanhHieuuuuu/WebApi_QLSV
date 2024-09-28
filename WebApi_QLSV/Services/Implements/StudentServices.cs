@@ -4,13 +4,14 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using WebApi_QLSV.DbContexts;
+using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.Student;
 using WebApi_QLSV.Entities;
 using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
 
-namespace WebApi_QLSV.Services.Implements.StudentAndClassFd
+namespace WebApi_QLSV.Services.Implements
 {
     public class StudentServices : IStudentServices
     {
@@ -23,7 +24,7 @@ namespace WebApi_QLSV.Services.Implements.StudentAndClassFd
             _jwtsettings = jwtsettings;
         }
 
-        private string Createtoken(string username)
+        private string Createtokens(string username)
         {
             var claims = new[]
             {
@@ -43,8 +44,7 @@ namespace WebApi_QLSV.Services.Implements.StudentAndClassFd
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-        private static string RemoveDiacritics(string text)
+        private string RemoveDiacritics(string text)
         {
             string[] accentedChars = new string[]
             {
@@ -196,25 +196,31 @@ namespace WebApi_QLSV.Services.Implements.StudentAndClassFd
 
             return text;
         }
-
-        public ResponseLoginDtos LoginStudent(LoginStudentDtos input)
+    public ResponseLoginDtos LoginStudent(Login input)
         {
             var student =
-                _context.Students.SingleOrDefault(x => x.StudentId == input.StudentId)
+                _context.Students.SingleOrDefault(x => x.Email == input.Email)
                 ?? throw new UserExceptions("Không tồn tại tài khoản");
 
             bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, student.Password);
-
+            var token = Createtokens(student.Username);
+            var findNganh = _context.LopQLs.FirstOrDefault(l => l.TenLopQL == student.TenLopQL);
+            var nganh = _context.Nganhs.FirstOrDefault(n => n.NganhId == findNganh.NganhId);
             if (isValid)
             {
                 var sucess = new ResponseLoginDtos
                 {
                     Username = student.Username,
                     Email = student.Email,
-                    Token = Createtoken(student.Username),
+                    Token = token,
                     Birthday = student.Birthday,
                     QueQuan = student.QueQuan,
                     TenLopQL = student.TenLopQL,
+                    Cccd = student.Cccd,
+                    GioiTinh = student.GioiTinh,
+                    StudentId = student.StudentId,
+                    nganh = nganh.TenNganh,
+                    nganhId = nganh.NganhId,
                 };
                 return sucess;
             }
@@ -243,8 +249,17 @@ namespace WebApi_QLSV.Services.Implements.StudentAndClassFd
             string Password = name + IdStudent;
             var findLopQL =
                 _context.LopQLs.FirstOrDefault(n => n.TenLopQL == input.TenLopQL.ToUpper())
-                ?? throw new UserExceptions("Không tồn tại nghành này");
-
+                ?? throw new UserExceptions($"Không tồn tại lớp {input.TenLopQL.ToUpper()}");
+            var findCccd = _context.Students.FirstOrDefault(c => c.Cccd == input.Cccd);
+            if (findCccd != null)
+            {
+                throw new UserExceptions("Đã Tồn tại CCCD");
+            }
+            var sum = _context.Students.Count(s => s.TenLopQL == input.TenLopQL.ToUpper());
+            if (sum >= findLopQL.MaxStudent)
+            {
+                throw new UserExceptions("Lớp đã đủ số lượng");
+            }
             var student = new Student
             {
                 StudentId = IdStudent,

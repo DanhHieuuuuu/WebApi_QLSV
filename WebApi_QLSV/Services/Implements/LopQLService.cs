@@ -22,6 +22,7 @@ namespace WebApi_QLSV.Services.Implements
             var findNganh =
                 _context.Nganhs.FirstOrDefault(n => n.NganhId == input.NganhId.ToUpper())
                 ?? throw new UserExceptions("Không tồn tại nghành này");
+            // tìm chủ nhiệm
             var result = new LopQL
             {
                 TenLopQL = input.TenLopQL.ToUpper(),

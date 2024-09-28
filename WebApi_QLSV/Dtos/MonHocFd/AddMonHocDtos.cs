@@ -1,22 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace WebApi_QLSV.Entities
+namespace WebApi_QLSV.Dtos.MonHocFd
 {
-    [Table(nameof(CauHoi))]
-    public class CauHoi
+    public class AddMonHocDtos
     {
-        [Key]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string CauHoiId { get; set; }
+        public string MonId { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string NoiDungCauHoi { get; set; }
+        public string TenMon { get; set; }
+        public int Sotin { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public bool Role { get; set; }
+        public string KiHoc { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public int MaxDiem { get; set; }
+        public string CTKhungId { get; set; }
     }
 }

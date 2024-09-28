@@ -8,7 +8,7 @@ namespace WebApi_QLSV.Entities
     {
         [Key]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string TeacherId { get; set; }
+        public string ManagerId { get; set; }
 
         [
             Required(AllowEmptyStrings = false, ErrorMessage = "Vui lòng nhập email"),
@@ -21,9 +21,9 @@ namespace WebApi_QLSV.Entities
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string Password { get; set; }
-
+        public DateTime Birthday { get; set; }
+        public bool GioiTinh { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string Khoa { get; set; }
-        //[Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
+        public string Cccd { get; set; }
     }
 }
