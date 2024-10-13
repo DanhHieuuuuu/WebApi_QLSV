@@ -8,8 +8,10 @@ namespace WebApi_QLSV.Services.Interfaces
 {
     public interface ITeacherService
     {
-        Teacher AddTeacher(AddTeacherDtos input);
+        Task<Teacher> AddTeacher2([FromForm] AddTeacherDtos2 input);
         PageResultDtos<TeacherDtos> GetAll([FromQuery] FilterDtos input);
-        TeacherDtos LoginTeacher(Login input);
+        PageResultDtos<TeacherInBoMon> GetAllTeacherInBoMon([FromQuery] FilterDtos input);
+        ResponseLoginTeacherDtos LoginTeacher(Login input);
+        Task<TeacherDtos> UpdateTeacher([FromQuery] string teacherId, [FromForm] UpdateTeacherDtos input);
     }
 }

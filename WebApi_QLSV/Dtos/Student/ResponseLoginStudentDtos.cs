@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApi_QLSV.Dtos.Student
 {
-    public class ResponseLoginDtos
+    public class ResponseLoginStudentDtos
     {
         public string StudentId { get; set; }   
         public string TenLopQL { get; set; }
@@ -15,6 +15,7 @@ namespace WebApi_QLSV.Dtos.Student
         public string? QueQuan { get; set; }
         public string? Cccd { get; set; }
         public bool? GioiTinh { get; set; }
+        public string? UrlImage { get; set; }
         public string? Token { get; set; }
     }
 }

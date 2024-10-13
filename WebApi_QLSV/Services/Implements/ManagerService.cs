@@ -198,8 +198,7 @@ namespace WebApi_QLSV.Services.Implements
 
             return text;
         }
-
-        public Manager AddManager(AddManagerDtos input)
+        public async Task<Manager> AddManager2([FromForm] AddManagerDtos2 input)
         {
             var findEmail = _context.Managers.FirstOrDefault(m => m.Email == input.Email);
             if (findEmail != null)
@@ -221,11 +220,24 @@ namespace WebApi_QLSV.Services.Implements
                 Cccd = input.Cccd,
                 GioiTinh = input.GioiTinh,
             };
+            if (input.Image.Length > 0)
+            {
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", input.Image.FileName);
+                using (var stream = System.IO.File.Create(path))
+                {
+                    await input.Image.CopyToAsync(stream);
+                }
+                manager.Image = "/images/" + input.Image.FileName;
+            }
+            else
+            {
+                throw new UserExceptions("Không có file");
+            }
             _context.Managers.Add(manager);
             _context.SaveChanges();
             return manager;
         }
-        public ManagerDtos LoginManager(Login input)
+        public ResponseLoginManagerDtos LoginManager(Login input)
         {
             var manager =
                 _context.Managers.SingleOrDefault(x => x.Email == input.Email)
@@ -235,7 +247,7 @@ namespace WebApi_QLSV.Services.Implements
             var token = Createtokens(manager.Username);
             if (isValid)
             {
-                var sucess = new ManagerDtos
+                var sucess = new ResponseLoginManagerDtos
                 {
                     ManagerId = manager.ManagerId,
                     Username = manager.Username,
@@ -243,6 +255,7 @@ namespace WebApi_QLSV.Services.Implements
                     Birthday=manager.Birthday,
                     Cccd = manager.Cccd,
                     GioiTinh = manager.GioiTinh,
+                    UrlImage = manager.Image,
                     Token = token,
                 };
                 return sucess;
@@ -252,8 +265,7 @@ namespace WebApi_QLSV.Services.Implements
                 throw new UserExceptions("Không đúng mật khẩu");
             }
         }
-
-            public PageResultDtos<ManagerDtos> GetAllManager([FromQuery] FilterDtos input)
+        public PageResultDtos<ManagerDtos> GetAllManager([FromQuery] FilterDtos input)
         {
             var result = new PageResultDtos<ManagerDtos>();
             var allManager =
@@ -266,6 +278,7 @@ namespace WebApi_QLSV.Services.Implements
                     Cccd = mng.Cccd,
                     Email = mng.Email,
                     GioiTinh = mng.GioiTinh,
+                    Image = mng.Image
                 };
             var query = allManager.Where(e =>
                 string.IsNullOrEmpty(input.KeyWord)

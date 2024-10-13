@@ -9,7 +9,8 @@ namespace WebApi_QLSV.Entities
         [Key]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string CTKhungId { get; set; }
-
         public int TongSoTin { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
+        public string NganhId { get; set; }
     }
 }

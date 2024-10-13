@@ -4,9 +4,9 @@
     {
         public string StudentId { get; set; }
         public string LopHPId { get; set; }
-        public int? DiemQT { get; set; }
-        public int? DiemKT { get; set; }
-        public int? DiemMH { get; set; }
+        public double? DiemQT { get; set; }
+        public double? DiemKT { get; set; }
+        public double? DiemMH { get; set; }
 
     }
 }

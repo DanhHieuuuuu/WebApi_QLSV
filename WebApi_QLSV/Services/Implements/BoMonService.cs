@@ -2,7 +2,9 @@
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Dtos.BoMonFd;
 using WebApi_QLSV.Dtos.Common;
+using WebApi_QLSV.Dtos.NganhFd;
 using WebApi_QLSV.Entities;
+using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
 
 namespace WebApi_QLSV.Services.Implements
@@ -18,13 +20,21 @@ namespace WebApi_QLSV.Services.Implements
 
         public BoMon AddBoMon(AddBoMonDtos input)
         {
+            var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId)
+                ?? throw new UserExceptions("Không tồn tại khoa");
+            var findBoMon = _context.BoMons.FirstOrDefault(k => k.BoMonId == input.BoMonId.ToUpper());
+            if (findBoMon != null)
+            {
+                throw new UserExceptions("Đã tồn tại mã bộ môn");
+            }
             var results = new BoMon
             {
-                BoMonId = input.BoMonId,
+                BoMonId = input.BoMonId.ToUpper(),
                 TenBoMon = input.TenBoMon,
                 TruongBoMon = input.TruongBoMon,
                 PhoBoMon = input.PhoBoMon,
-                SoLuongGV = input.SoLuongGV,
+                SoLuongGV = 0,
+                KhoaId = findKhoa.KhoaId,
             };
             _context.BoMons.Add(results);
             _context.SaveChanges();
@@ -46,6 +56,30 @@ namespace WebApi_QLSV.Services.Implements
             result.Items = query.ToList();
 
             return result;
+        }
+        public List<BoMonTheoKhoaDtos> GetBoMonTheoKhoa()
+        {
+            var group = _context.BoMons.GroupBy(e => e.KhoaId).Select(
+                g => new
+                {
+                    khoaId = g.Key,
+                    boMon = g.OrderBy(e => e.TenBoMon).ToList(),
+                }
+                );
+            var listBoMon = new List<BoMonTheoKhoaDtos>();
+            foreach (var item in group)
+            {
+
+                var newBoMon = new BoMonTheoKhoaDtos
+                {
+                    KhoaId = item.khoaId,
+                    BoMons = item.boMon,
+
+                };
+                listBoMon.Add(newBoMon);
+
+            }
+            return listBoMon;
         }
     }
 }

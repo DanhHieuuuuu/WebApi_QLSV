@@ -38,6 +38,18 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("/Get-all-lopQL-theo-nganh")]
+        public IActionResult GetAllLopQLTheoNganh([FromQuery] FilterDtos input3)
+        {
+            try
+            {
+                return Ok(_lopQLService.getAllLopQLTheoNganh(input3));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
     }
 }

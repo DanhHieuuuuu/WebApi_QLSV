@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApi_QLSV.Migrations
 {
     /// <inheritdoc />
-    public partial class mgs : Migration
+    public partial class qlsv : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,26 +28,11 @@ namespace WebApi_QLSV.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BoMon",
-                columns: table => new
-                {
-                    BoMonId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenBoMon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TruongBoMon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoBoMon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SoLuongGV = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BoMon", x => x.BoMonId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CauHoi",
                 columns: table => new
                 {
                     CauHoiId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenCauHoi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NoiDungCauHoi = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<bool>(type: "bit", nullable: false),
                     MaxDiem = table.Column<int>(type: "int", nullable: false)
                 },
@@ -61,11 +46,8 @@ namespace WebApi_QLSV.Migrations
                 columns: table => new
                 {
                     CTKhungId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MonId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TenMon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NamHoc = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KiHoc = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SoTin = table.Column<int>(type: "int", nullable: false)
+                    TongSoTin = table.Column<int>(type: "int", nullable: false),
+                    NganhId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,36 +72,37 @@ namespace WebApi_QLSV.Migrations
                 name: "Manager",
                 columns: table => new
                 {
-                    TeacherId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Khoa = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Birthday = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    GioiTinh = table.Column<bool>(type: "bit", nullable: false),
+                    Cccd = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Manager", x => x.TeacherId);
+                    table.PrimaryKey("PK_Manager", x => x.ManagerId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Teacher",
+                name: "BoMon",
                 columns: table => new
                 {
-                    TeacherId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenGiangVien = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BoMonId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    KhoaId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    TenBoMon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TruongBoMon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoBoMon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SoLuongGV = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teacher", x => x.TeacherId);
+                    table.PrimaryKey("PK_BoMon", x => x.BoMonId);
                     table.ForeignKey(
-                        name: "FK_Teacher_BoMon_BoMonId",
+                        name: "FK_BoMon_Khoa_BoMonId",
                         column: x => x.BoMonId,
-                        principalTable: "BoMon",
-                        principalColumn: "BoMonId",
+                        principalTable: "Khoa",
+                        principalColumn: "KhoaId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -129,7 +112,6 @@ namespace WebApi_QLSV.Migrations
                 {
                     NganhId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TenNganh = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CTKhungId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InfoNganh = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     KhoaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     SumClass = table.Column<int>(type: "int", nullable: false)
@@ -152,38 +134,46 @@ namespace WebApi_QLSV.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LopHP",
+                name: "MonHoc",
                 columns: table => new
                 {
-                    LopHPId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenLopHP = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaxStudent = table.Column<int>(type: "int", maxLength: 100, nullable: false),
-                    TeacherId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    NganhId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    BlockId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    BatDau = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    KetThuc = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    MaHocPhan = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TenMon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sotin = table.Column<int>(type: "int", nullable: false),
+                    BoMonId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LopHP", x => x.LopHPId);
+                    table.PrimaryKey("PK_MonHoc", x => x.MaHocPhan);
                     table.ForeignKey(
-                        name: "FK_LopHP_Block_BlockId",
-                        column: x => x.BlockId,
-                        principalTable: "Block",
-                        principalColumn: "BlockId",
+                        name: "FK_MonHoc_BoMon_BoMonId",
+                        column: x => x.BoMonId,
+                        principalTable: "BoMon",
+                        principalColumn: "BoMonId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teacher",
+                columns: table => new
+                {
+                    TeacherId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TenGiangVien = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Birthday = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    GioiTinh = table.Column<bool>(type: "bit", nullable: false),
+                    Cccd = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BoMonId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teacher", x => x.TeacherId);
                     table.ForeignKey(
-                        name: "FK_LopHP_Nganh_NganhId",
-                        column: x => x.NganhId,
-                        principalTable: "Nganh",
-                        principalColumn: "NganhId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_LopHP_Teacher_TeacherId",
-                        column: x => x.TeacherId,
-                        principalTable: "Teacher",
-                        principalColumn: "TeacherId",
+                        name: "FK_Teacher_BoMon_BoMonId",
+                        column: x => x.BoMonId,
+                        principalTable: "BoMon",
+                        principalColumn: "BoMonId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -210,6 +200,37 @@ namespace WebApi_QLSV.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LopHP",
+                columns: table => new
+                {
+                    LopHPId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TenLopHP = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    KiHocNamHoc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MaxStudent = table.Column<int>(type: "int", maxLength: 100, nullable: false),
+                    TeacherId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BlockId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MonId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BatDau = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    KetThuc = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LopHP", x => x.LopHPId);
+                    table.ForeignKey(
+                        name: "FK_LopHP_Block_BlockId",
+                        column: x => x.BlockId,
+                        principalTable: "Block",
+                        principalColumn: "BlockId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LopHP_Teacher_TeacherId",
+                        column: x => x.TeacherId,
+                        principalTable: "Teacher",
+                        principalColumn: "TeacherId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Student",
                 columns: table => new
                 {
@@ -218,10 +239,12 @@ namespace WebApi_QLSV.Migrations
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Birthday = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NienKhoa = table.Column<int>(type: "int", nullable: false),
                     TenLopQL = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     QueQuan = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Cccd = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GioiTinh = table.Column<bool>(type: "bit", nullable: false)
+                    GioiTinh = table.Column<bool>(type: "bit", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -239,7 +262,12 @@ namespace WebApi_QLSV.Migrations
                 columns: table => new
                 {
                     StudentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LopHPId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    LopHPId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DiemQT = table.Column<double>(type: "float", nullable: true),
+                    DiemKT = table.Column<double>(type: "float", nullable: true),
+                    DiemMH = table.Column<double>(type: "float", nullable: true),
+                    TienMonHoc = table.Column<int>(type: "int", nullable: false),
+                    Nop = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -258,45 +286,15 @@ namespace WebApi_QLSV.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Diem",
-                columns: table => new
-                {
-                    DiemId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    StudentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MonId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KiHoc = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Diem", x => x.DiemId);
-                    table.ForeignKey(
-                        name: "FK_Diem_Student_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Student",
-                        principalColumn: "StudentId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_ClassStudent_LopHPId",
                 table: "ClassStudent",
                 column: "LopHPId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Diem_StudentId",
-                table: "Diem",
-                column: "StudentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_LopHP_BlockId",
                 table: "LopHP",
                 column: "BlockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LopHP_NganhId",
-                table: "LopHP",
-                column: "NganhId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LopHP_TeacherId",
@@ -307,6 +305,11 @@ namespace WebApi_QLSV.Migrations
                 name: "IX_LopQL_NganhId",
                 table: "LopQL",
                 column: "NganhId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MonHoc_BoMonId",
+                table: "MonHoc",
+                column: "BoMonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Nganh_KhoaId",
@@ -334,10 +337,10 @@ namespace WebApi_QLSV.Migrations
                 name: "ClassStudent");
 
             migrationBuilder.DropTable(
-                name: "Diem");
+                name: "Manager");
 
             migrationBuilder.DropTable(
-                name: "Manager");
+                name: "MonHoc");
 
             migrationBuilder.DropTable(
                 name: "LopHP");

@@ -27,7 +27,10 @@ namespace WebApi_QLSV.Entities
         public DateTime Birthday { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string TenLopQL { get; set; }
+        public int NienKhoa { get; set; } = DateTime.Now.Year;
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
+        public string LopQLId { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string? QueQuan { get; set; }
@@ -37,5 +40,6 @@ namespace WebApi_QLSV.Entities
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public bool? GioiTinh { get; set; }
+        public string? Image { get; set; }
     }
 }

@@ -33,8 +33,8 @@ namespace WebApi_QLSV.Services.Implements
             }
             else
             {
-                var findMon = _context.MonHocs.FirstOrDefault(m => m.MonId == cl.MonId);
-                var tienhoc = 455000 * findMon.Sotin;
+                var findMon = _context.MonHocs.FirstOrDefault(m => m.MaMonHoc == cl.MonId);
+                var tienhoc = 455000 * findMon.SoTin;
                 var StudentCl = new ClassStudent
                 {
                     LopHPId = input.LopHPId,

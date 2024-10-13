@@ -19,17 +19,18 @@ namespace WebApi_QLSV.Services.Implements
 
         public Nganh AddNganh(AddNganhDtos input)
         {
-            var findCTK =
-                _context.CTKhungs.FirstOrDefault(n => n.CTKhungId == input.CTKhungId.ToUpper())
-                ?? throw new UserExceptions($"Không tồn tại ID CTK: {input.CTKhungId}");
             var findKHoa =
                 _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId.ToUpper())
                 ?? throw new UserExceptions($"Không tồn tại Id khoa: {input.KhoaId}");
+            var findNgang = _context.Nganhs.FirstOrDefault(n => n.NganhId == input.NganhId.ToUpper());
+            if (findNgang != null)
+            {
+                throw new UserExceptions("Đã tồn tại mã ngành");
+            }
             var result = new Nganh
             {
                 NganhId = input.NganhId.ToUpper(),
                 TenNganh = input.TenNganh,
-                CTKhungId = input.CTKhungId.ToUpper(),
                 InfoNganh = input.InfoNganh,
                 KhoaId = input.KhoaId.ToUpper(),
                 SumClass = 0,
@@ -45,12 +46,12 @@ namespace WebApi_QLSV.Services.Implements
 
             var query = _context.Nganhs.Where(e =>
                 string.IsNullOrEmpty(input.KeyWord)
-                || e.TenNganh.ToLower().Contains(input.KeyWord.ToLower())
+                || e.KhoaId.ToLower().Contains(input.KeyWord.ToLower())
             );
             result.TotalItem = query.Count();
 
             query = query
-                .OrderByDescending(e => e.TenNganh)
+                .OrderBy(e => e.TenNganh)
                 .ThenByDescending(e => e.SumClass)
                 .Skip(input.Skip())
                 .Take(input.PageSize);
@@ -58,6 +59,30 @@ namespace WebApi_QLSV.Services.Implements
             result.Items = query.ToList();
 
             return result;
+        }
+        public List<NganhTheoKhoaDots> GetNganhTheoKhoa()
+        {
+            var group = _context.Nganhs.GroupBy(e => e.KhoaId).Select(
+                g => new
+                {
+                    khoaId = g.Key,
+                    nganh = g.OrderBy(e => e.TenNganh).ToList(),
+                }
+                );
+            var listNganh = new List<NganhTheoKhoaDots>();
+            foreach (var item in group)
+            {
+
+                var newNganh = new NganhTheoKhoaDots
+                {
+                    KhoaId = item.khoaId,
+                    Nganhs = item.nganh,
+
+                };
+                listNganh.Add(newNganh);
+                
+            }
+            return listNganh;
         }
     }
 }

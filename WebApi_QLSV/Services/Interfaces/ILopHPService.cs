@@ -7,7 +7,7 @@ namespace WebApi_QLSV.Services.Interfaces
 {
     public interface ILopHPService
     {
-        LopHP AddLopHP(AddLopHPDtos input);
-        PageResultDtos<LopHP> GetAllLopHP([FromQuery] FilterDtos input);
+        //LopHP AddLopHP(AddLopHPDtos input);
+        //PageResultDtos<LopHP> GetAllLopHP([FromQuery] FilterDtos input);
     }
 }

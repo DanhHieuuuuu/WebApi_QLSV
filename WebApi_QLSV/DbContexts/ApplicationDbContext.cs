@@ -26,16 +26,35 @@ namespace WebApi_QLSV.DbContexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder
+                .Entity<BoMon>()
+                .HasOne<Khoa>()
+                .WithMany()
+                .HasForeignKey(e => e.KhoaId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder
+                .Entity<MonHoc>()
+                .HasOne<BoMon>()
+                .WithMany()
+                .HasForeignKey(e => e.BoMonId)
+                .OnDelete(DeleteBehavior.Restrict);
+            base.OnModelCreating(modelBuilder);
+            modelBuilder
+                .Entity<Teacher>()
+                .HasOne<BoMon>()
+                .WithMany()
+                .HasForeignKey(e => e.BoMonId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder
                 .Entity<Nganh>()
                 .HasOne<Khoa>()
                 .WithMany()
                 .HasForeignKey(e => e.KhoaId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder
-                .Entity<Nganh>()
-                .HasOne<CTKhung>()
+                .Entity<CTKhung>()
+                .HasOne<Nganh>()
                 .WithOne()
-                .HasForeignKey<Nganh>(e => e.CTKhungId)
+                .HasForeignKey<CTKhung>(e => e.NganhId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder
                 .Entity<LopQL>()
@@ -43,18 +62,7 @@ namespace WebApi_QLSV.DbContexts
                 .WithMany()
                 .HasForeignKey(e => e.NganhId)
                 .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder
-                .Entity<LopHP>()
-                .HasOne<Nganh>()
-                .WithMany()
-                .HasForeignKey(e => e.NganhId)
-                .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder
-                .Entity<LopHP>()
-                .HasOne<MonHoc>()
-                .WithMany()
-                .HasForeignKey(e => e.MonId)
-                .OnDelete(DeleteBehavior.Restrict);
+            
             modelBuilder
                 .Entity<ClassStudent>()
                 .HasOne<LopHP>()
@@ -68,12 +76,7 @@ namespace WebApi_QLSV.DbContexts
                 .HasForeignKey(s => s.StudentId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ClassStudent>().HasKey(s => new { s.StudentId, s.LopHPId });
-            modelBuilder
-                .Entity<Teacher>()
-                .HasOne<BoMon>()
-                .WithMany()
-                .HasForeignKey(e => e.BoMonId)
-                .OnDelete(DeleteBehavior.Restrict);
+            
             modelBuilder
                 .Entity<LopHP>()
                 .HasOne<Teacher>()
@@ -84,7 +87,7 @@ namespace WebApi_QLSV.DbContexts
                 .Entity<Student>()
                 .HasOne<LopQL>()
                 .WithMany()
-                .HasForeignKey(e => e.TenLopQL)
+                .HasForeignKey(e => e.LopQLId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder
                 .Entity<LopHP>()
@@ -92,13 +95,7 @@ namespace WebApi_QLSV.DbContexts
                 .WithMany()
                 .HasForeignKey(e => e.BlockId)
                 .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder
-                .Entity<MonHoc>()
-                .HasOne<CTKhung>()
-                .WithMany()
-                .HasForeignKey(e => e.CTKhungId)
-                .OnDelete(DeleteBehavior.Restrict);
-            base.OnModelCreating(modelBuilder);
+            
         }
     }
 }

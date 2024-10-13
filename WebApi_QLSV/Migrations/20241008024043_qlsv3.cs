@@ -5,7 +5,7 @@
 namespace WebApi_QLSV.Migrations
 {
     /// <inheritdoc />
-    public partial class updatemgs3 : Migration
+    public partial class qlsv3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,25 +15,25 @@ namespace WebApi_QLSV.Migrations
                 table: "Nganh");
 
             migrationBuilder.AlterColumn<string>(
-                name: "CTKhungId",
-                table: "Nganh",
+                name: "NganhId",
+                table: "CTKhung",
                 type: "nvarchar(450)",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Nganh_CTKhungId",
-                table: "Nganh",
-                column: "CTKhungId",
+                name: "IX_CTKhung_NganhId",
+                table: "CTKhung",
+                column: "NganhId",
                 unique: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Nganh_CTKhung_CTKhungId",
-                table: "Nganh",
-                column: "CTKhungId",
-                principalTable: "CTKhung",
-                principalColumn: "CTKhungId",
+                name: "FK_CTKhung_Nganh_NganhId",
+                table: "CTKhung",
+                column: "NganhId",
+                principalTable: "Nganh",
+                principalColumn: "NganhId",
                 onDelete: ReferentialAction.Restrict);
         }
 
@@ -41,16 +41,16 @@ namespace WebApi_QLSV.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Nganh_CTKhung_CTKhungId",
-                table: "Nganh");
+                name: "FK_CTKhung_Nganh_NganhId",
+                table: "CTKhung");
 
             migrationBuilder.DropIndex(
-                name: "IX_Nganh_CTKhungId",
-                table: "Nganh");
+                name: "IX_CTKhung_NganhId",
+                table: "CTKhung");
 
             migrationBuilder.AlterColumn<string>(
-                name: "CTKhungId",
-                table: "Nganh",
+                name: "NganhId",
+                table: "CTKhung",
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(string),

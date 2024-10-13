@@ -8,8 +8,8 @@ namespace WebApi_QLSV.Services.Interfaces
 {
     public interface IManagerService
     {
-        Manager AddManager(AddManagerDtos input);
+        Task<Manager> AddManager2([FromForm] AddManagerDtos2 input);
         PageResultDtos<ManagerDtos> GetAllManager([FromQuery] FilterDtos input);
-        ManagerDtos LoginManager(Login input);
+        ResponseLoginManagerDtos LoginManager(Login input);
     }
 }

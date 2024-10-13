@@ -12,8 +12,8 @@ using WebApi_QLSV.DbContexts;
 namespace WebApi_QLSV.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240921102753_mgs")]
-    partial class mgs
+    [Migration("20241010095008_qlsv7")]
+    partial class qlsv7
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,6 +58,10 @@ namespace WebApi_QLSV.Migrations
                     b.Property<string>("BoMonId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("KhoaId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("PhoBoMon")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -75,6 +79,8 @@ namespace WebApi_QLSV.Migrations
 
                     b.HasKey("BoMonId");
 
+                    b.HasIndex("KhoaId");
+
                     b.ToTable("BoMon");
                 });
 
@@ -83,26 +89,17 @@ namespace WebApi_QLSV.Migrations
                     b.Property<string>("CTKhungId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("KiHoc")
+                    b.Property<string>("NganhId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("MonId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NamHoc")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SoTin")
+                    b.Property<int>("TongSoTin")
                         .HasColumnType("int");
 
-                    b.Property<string>("TenMon")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("CTKhungId");
+
+                    b.HasIndex("NganhId")
+                        .IsUnique();
 
                     b.ToTable("CTKhung");
                 });
@@ -115,12 +112,12 @@ namespace WebApi_QLSV.Migrations
                     b.Property<int>("MaxDiem")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Role")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("TenCauHoi")
+                    b.Property<string>("NoiDungCauHoi")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Role")
+                        .HasColumnType("bit");
 
                     b.HasKey("CauHoiId");
 
@@ -134,6 +131,21 @@ namespace WebApi_QLSV.Migrations
 
                     b.Property<string>("LopHPId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<double?>("DiemKT")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("DiemMH")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("DiemQT")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("Nop")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TienMonHoc")
+                        .HasColumnType("int");
 
                     b.HasKey("StudentId", "LopHPId");
 
@@ -157,13 +169,17 @@ namespace WebApi_QLSV.Migrations
                     b.Property<DateTime>("KetThuc")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("KiHocNamHoc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("MaxStudent")
                         .HasMaxLength(100)
                         .HasColumnType("int");
 
-                    b.Property<string>("NganhId")
+                    b.Property<string>("MonId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TeacherId")
                         .IsRequired()
@@ -177,8 +193,6 @@ namespace WebApi_QLSV.Migrations
 
                     b.HasIndex("BlockId");
 
-                    b.HasIndex("NganhId");
-
                     b.HasIndex("TeacherId");
 
                     b.ToTable("LopHP");
@@ -186,19 +200,13 @@ namespace WebApi_QLSV.Migrations
 
             modelBuilder.Entity("WebApi_QLSV.Entities.ClassFd.LopQL", b =>
                 {
-                    b.Property<string>("TenLopQL")
+                    b.Property<string>("LopQLId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ChuNhiem")
-                        .IsRequired()
+                    b.Property<string>("LopPhoId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LopPho")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LopTruong")
-                        .IsRequired()
+                    b.Property<string>("LopTruongId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MaxStudent")
@@ -209,35 +217,15 @@ namespace WebApi_QLSV.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("TenLopQL");
+                    b.Property<string>("TeacherId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LopQLId");
 
                     b.HasIndex("NganhId");
 
                     b.ToTable("LopQL");
-                });
-
-            modelBuilder.Entity("WebApi_QLSV.Entities.Diem", b =>
-                {
-                    b.Property<string>("DiemId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("KiHoc")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MonId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("DiemId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("Diem");
                 });
 
             modelBuilder.Entity("WebApi_QLSV.Entities.Khoa", b =>
@@ -264,16 +252,22 @@ namespace WebApi_QLSV.Migrations
 
             modelBuilder.Entity("WebApi_QLSV.Entities.Manager", b =>
                 {
-                    b.Property<string>("TeacherId")
+                    b.Property<string>("ManagerId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Birthday")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Cccd")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Khoa")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("GioiTinh")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -283,19 +277,38 @@ namespace WebApi_QLSV.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("TeacherId");
+                    b.HasKey("ManagerId");
 
                     b.ToTable("Manager");
+                });
+
+            modelBuilder.Entity("WebApi_QLSV.Entities.MonHoc", b =>
+                {
+                    b.Property<string>("MaHocPhan")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BoMonId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Sotin")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenMon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MaHocPhan");
+
+                    b.HasIndex("BoMonId");
+
+                    b.ToTable("MonHoc");
                 });
 
             modelBuilder.Entity("WebApi_QLSV.Entities.Nganh", b =>
                 {
                     b.Property<string>("NganhId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CTKhungId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InfoNganh")
                         .IsRequired()
@@ -339,6 +352,16 @@ namespace WebApi_QLSV.Migrations
                         .IsRequired()
                         .HasColumnType("bit");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LopQLId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("NienKhoa")
+                        .HasColumnType("int");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -347,17 +370,13 @@ namespace WebApi_QLSV.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TenLopQL")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("StudentId");
 
-                    b.HasIndex("TenLopQL");
+                    b.HasIndex("LopQLId");
 
                     b.ToTable("Student");
                 });
@@ -367,17 +386,23 @@ namespace WebApi_QLSV.Migrations
                     b.Property<string>("TeacherId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("Birthday")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("BoMonId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Cccd")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("KhoaId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("GioiTinh")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -392,6 +417,24 @@ namespace WebApi_QLSV.Migrations
                     b.HasIndex("BoMonId");
 
                     b.ToTable("Teacher");
+                });
+
+            modelBuilder.Entity("WebApi_QLSV.Entities.BoMon", b =>
+                {
+                    b.HasOne("WebApi_QLSV.Entities.Khoa", null)
+                        .WithMany()
+                        .HasForeignKey("KhoaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WebApi_QLSV.Entities.CTKhung", b =>
+                {
+                    b.HasOne("WebApi_QLSV.Entities.Nganh", null)
+                        .WithOne()
+                        .HasForeignKey("WebApi_QLSV.Entities.CTKhung", "NganhId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebApi_QLSV.Entities.ClassFd.ClassStudent", b =>
@@ -417,12 +460,6 @@ namespace WebApi_QLSV.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebApi_QLSV.Entities.Nganh", null)
-                        .WithMany()
-                        .HasForeignKey("NganhId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("WebApi_QLSV.Entities.Teacher", null)
                         .WithMany()
                         .HasForeignKey("TeacherId")
@@ -439,11 +476,11 @@ namespace WebApi_QLSV.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApi_QLSV.Entities.Diem", b =>
+            modelBuilder.Entity("WebApi_QLSV.Entities.MonHoc", b =>
                 {
-                    b.HasOne("WebApi_QLSV.Entities.Student", null)
+                    b.HasOne("WebApi_QLSV.Entities.BoMon", null)
                         .WithMany()
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("BoMonId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
@@ -455,19 +492,13 @@ namespace WebApi_QLSV.Migrations
                         .HasForeignKey("KhoaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("WebApi_QLSV.Entities.CTKhung", null)
-                        .WithOne()
-                        .HasForeignKey("WebApi_QLSV.Entities.Nganh", "NganhId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebApi_QLSV.Entities.Student", b =>
                 {
                     b.HasOne("WebApi_QLSV.Entities.ClassFd.LopQL", null)
                         .WithMany()
-                        .HasForeignKey("TenLopQL")
+                        .HasForeignKey("LopQLId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

@@ -14,9 +14,6 @@ namespace WebApi_QLSV.Entities
         public string? TenNganh { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string? CTKhungId { get; set; }
-
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string? InfoNganh { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]

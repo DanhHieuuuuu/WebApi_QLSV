@@ -9,5 +9,6 @@ namespace WebApi_QLSV.Services.Interfaces
     {
         LopQL AddLopQL(AddLopQLDtos input);
         PageResultDtos<LopQL> GetAllLopQL([FromQuery] FilterDtos input);
+        PageResultDtos<LopQLTheoNganhDtos> getAllLopQLTheoNganh([FromQuery] FilterDtos input);
     }
 }

@@ -12,6 +12,8 @@ namespace WebApi_QLSV.Entities.ClassFd
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string TenLopHP { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
+        public string KiHocNamHoc { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         [MaxLength(100)]
@@ -20,8 +22,6 @@ namespace WebApi_QLSV.Entities.ClassFd
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string? TeacherId { get; set; }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string? NganhId { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string BlockId { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]

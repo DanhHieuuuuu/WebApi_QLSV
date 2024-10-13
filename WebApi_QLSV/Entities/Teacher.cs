@@ -28,6 +28,7 @@ namespace WebApi_QLSV.Entities
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string BoMonId { get; set; }
+        public string? Image { get; set; }
 
     }
 }

@@ -8,16 +8,12 @@ namespace WebApi_QLSV.Entities
     {
         [Key]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string MonId { get; set; }
+        public string MaMonHoc { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string TenMon { get; set; }
-        public int Sotin {  get; set; }
-
+        public int SoTin {  get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string KiHoc { get; set; }
-
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string CTKhungId { get; set; }
+        public string BoMonId { get; set; }
     }
 }

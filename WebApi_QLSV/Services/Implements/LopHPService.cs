@@ -17,48 +17,49 @@ namespace WebApi_QLSV.Services.Implements
         {
             _context = context;
         }
-        public LopHP AddLopHP(AddLopHPDtos input)
-        {
-            var findNganh = _context.Nganhs.FirstOrDefault(n => n.NganhId == input.NganhId)
-                ?? throw new UserExceptions($"Không tồn tại mã ngành: {input.NganhId}");
+        //public LopHP AddLopHP(AddLopHPDtos input)
+        //{
+        //    var findNganh = _context.Nganhs.FirstOrDefault(n => n.NganhId == input.NganhId)
+        //        ?? throw new UserExceptions($"Không tồn tại mã ngành: {input.NganhId}");
 
-            var findMon = _context.MonHocs.FirstOrDefault(m => m.CTKhungId == findNganh.CTKhungId && m.MonId == input.MonId)
-                ?? throw new UserExceptions($"Không tồn tại mã môn học: {input.MonId} trong ngành: {input.NganhId}");
-            var findBlock = _context.MonHocs.FirstOrDefault( m => m.MonId == input.MonId )
-                ?? throw new UserExceptions($"Không tồn tại mã block: {input.BlockId}");
-            var findTeacher = _context.Teachers.FirstOrDefault(t => t.TeacherId == input.TeacherId)
-                ?? throw new UserExceptions($"Không tồn tại giảng viên có mã: {input.TeacherId}");
-            var lop = new LopHP
-            {
-                LopHPId = input.LopHPId.ToUpper(),
-                TenLopHP = input.TenLopHP.ToUpper(),
-                MaxStudent = input.MaxStudent,
-                NganhId = input.NganhId,
-                BlockId = input.BlockId,
-                MonId = input.MonId,
-                TeacherId = input.TeacherId,
-                BatDau = input.BatDau,
-                KetThuc = input.KetThuc
-            };
-            _context.LopHPs.Add( lop );
-            _context.SaveChanges();
-            return lop;
-        }
-        public PageResultDtos<LopHP> GetAllLopHP([FromQuery] FilterDtos input)
-        {
-            var result = new PageResultDtos<LopHP>();
+        //    var findMon = _context.MonHocs.FirstOrDefault(m => m.CTKhungId == findNganh.CTKhungId && m.MaHocPhan == input.MonId)
+        //        ?? throw new UserExceptions($"Không tồn tại mã môn học: {input.MonId} trong ngành: {input.NganhId}");
+        //    var findBlock = _context.MonHocs.FirstOrDefault( m => m.MaHocPhan == input.MonId )
+        //        ?? throw new UserExceptions($"Không tồn tại mã block: {input.BlockId}");
+        //    var findTeacher = _context.Teachers.FirstOrDefault(t => t.TeacherId == input.TeacherId)
+        //        ?? throw new UserExceptions($"Không tồn tại giảng viên có mã: {input.TeacherId}");
+        //    var lop = new LopHP
+        //    {
+        //        LopHPId = input.LopHPId.ToUpper(),
+        //        TenLopHP = input.TenLopHP.ToUpper(),
+        //        KiHocNamHoc = input.KiHocNamHoc,
+        //        MaxStudent = input.MaxStudent,
+        //        NganhId = input.NganhId,
+        //        BlockId = input.BlockId,
+        //        MonId = input.MonId,
+        //        TeacherId = input.TeacherId,
+        //        BatDau = input.BatDau,
+        //        KetThuc = input.KetThuc
+        //    };
+        //    _context.LopHPs.Add( lop );
+        //    _context.SaveChanges();
+        //    return lop;
+        //}
+        //public PageResultDtos<LopHP> GetAllLopHP([FromQuery] FilterDtos input)
+        //{
+        //    var result = new PageResultDtos<LopHP>();
 
-            var query = _context.LopHPs.Where(e =>
-                string.IsNullOrEmpty(input.KeyWord)
-                || e.TenLopHP.ToLower().Contains(input.KeyWord.ToLower())
-            );
-            result.TotalItem = query.Count();
+        //    var query = _context.LopHPs.Where(e =>
+        //        string.IsNullOrEmpty(input.KeyWord)
+        //        || e.TenLopHP.ToLower().Contains(input.KeyWord.ToLower())
+        //    );
+        //    result.TotalItem = query.Count();
 
-            query = query.OrderBy(e => e.TenLopHP).ThenBy(e => e.LopHPId).Skip(input.Skip()).Take(input.PageSize);
+        //    query = query.OrderBy(e => e.TenLopHP).ThenBy(e => e.LopHPId).Skip(input.Skip()).Take(input.PageSize);
 
-            result.Items = query.ToList();
+        //    result.Items = query.ToList();
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }

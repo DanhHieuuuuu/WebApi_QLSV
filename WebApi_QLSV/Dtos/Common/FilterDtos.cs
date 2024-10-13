@@ -8,7 +8,7 @@ namespace WebApi_QLSV.Dtos.Common
         public int PageIndex { get; set; } = 1;
 
         [FromQuery(Name = "PageSize")]
-        public int PageSize { get; set; } = 5;
+        public int PageSize { get; set; } = 100;
 
         private string _keyWord;
         [FromQuery(Name = "KeyWord")]

@@ -8,6 +8,6 @@
         public DateTime Birthday { get; set; }
         public bool GioiTinh { get; set; }
         public string Cccd { get; set; }
-        public string Token { get; set; }
+        public string Image { get; set; }
     }
 }

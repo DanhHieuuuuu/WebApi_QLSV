@@ -27,6 +27,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
         [HttpGet("/Get-all-block")]
         public IActionResult GetAllBlock([FromQuery] FilterDtos input2)
         {

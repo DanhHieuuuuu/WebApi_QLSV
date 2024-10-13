@@ -11,6 +11,6 @@ namespace WebApi_QLSV.Dtos.Teacher
         public bool GioiTinh { get; set; }
         public string Cccd { get; set; }
         public string BoMonId { get; set; }
-        public string Token { get; set; }
+        public string Image {  get; set; }
     }
 }

@@ -1,8 +1,7 @@
-
+﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Services.Implements;
 using WebApi_QLSV.Services.Interfaces;
@@ -26,23 +25,27 @@ namespace WebApi_QLSV
             builder.Services.AddSingleton(jwtSettings);
 
             // Configure JWT authentication
-            builder.Services.AddAuthentication(option =>
-            {
-                option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(option =>
-            {
-                option.TokenValidationParameters = new TokenValidationParameters
+            builder
+                .Services.AddAuthentication(option =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
-                };
-            });
+                    option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(option =>
+                {
+                    option.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtSettings.SecretKey)
+                        ),
+                    };
+                });
             builder.Services.AddAuthorization();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -59,25 +62,26 @@ namespace WebApi_QLSV
             builder.Services.AddScoped<IBlockService, BlockService>();
             builder.Services.AddScoped<ILopHPService, LopHPService>();
             builder.Services.AddScoped<ICauHoiService, CauHoiService>();
+            builder.Services.AddScoped<IMonHocService, MonHocService>();
             builder.Services.AddDbContext<ApplicationDbContext>(option =>
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
             });
+            // Add CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAllOrigins",
+                options.AddPolicy(
+                    "AllowAllOrigins",
                     policy =>
                     {
-                        policy.AllowAnyOrigin()
-                              .AllowAnyMethod()
-                              .AllowAnyHeader();
-                    });
+                        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                    }
+                );
             });
-
 
             var app = builder.Build();
             app.UseCors("AllowAllOrigins");
-            app.UseCors("AllowSpecificOrigins");
+            //app.UseCors("AllowSpecificOrigins");
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -95,8 +99,12 @@ namespace WebApi_QLSV
             app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllers();
+            //http://192.168.23.229:5024/swagger/index.html
+
+            // Sử dụng middleware để phục vụ các tệp tĩnh
+            app.UseStaticFiles();
+            //app.Run("http://192.168.59.229:5024");
 
             app.Run();
         }

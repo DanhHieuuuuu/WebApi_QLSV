@@ -15,29 +15,29 @@ namespace WebApi_QLSV.Controllers
         {
             _hpService = hpService;
         }
-        [HttpPost("/Add-lop-hoc-phan")]
-        public IActionResult AddLopHP(AddLopHPDtos input)
-        {
-            try
-            {
-                return Ok(_hpService.AddLopHP(input));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpGet("/Get-all-lop-hoc-phan")]
-        public IActionResult GetLopHP([FromQuery] FilterDtos input2)
-        {
-            try
-            {
-                return Ok(_hpService.GetAllLopHP(input2));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpPost("/Add-lop-hoc-phan")]
+        //public IActionResult AddLopHP(AddLopHPDtos input)
+        //{
+        //    try
+        //    {
+        //        return Ok(_hpService.AddLopHP(input));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
+        //[HttpGet("/Get-all-lop-hoc-phan")]
+        //public IActionResult GetLopHP([FromQuery] FilterDtos input2)
+        //{
+        //    try
+        //    {
+        //        return Ok(_hpService.GetAllLopHP(input2));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
     }
 }

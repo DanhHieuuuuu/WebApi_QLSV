@@ -25,5 +25,7 @@ namespace WebApi_QLSV.Entities
         public bool GioiTinh { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string Cccd { get; set; }
+        public string? Image { get; set; }
+
     }
 }

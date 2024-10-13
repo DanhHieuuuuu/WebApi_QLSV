@@ -9,5 +9,6 @@ namespace WebApi_QLSV.Services.Interfaces
     {
         Nganh AddNganh(AddNganhDtos input);
         PageResultDtos<Nganh> GetAllNganh([FromQuery] FilterDtos input);
+        List<NganhTheoKhoaDots> GetNganhTheoKhoa();
     }
 }

@@ -8,9 +8,9 @@ namespace WebApi_QLSV.Services.Interfaces
 {
     public interface ICTKhungService
     {
-        CTKhung AddCTKhung(AddCTKhungDtos input);
-        PageResultDtos<CTKhung> GetAllCTKhung([FromQuery] FilterDtos input);
-        PageResultDtos<MonHoc> GetAllMonHocInCTK([FromQuery] FilterDtos input, string id);
-        List<MonInKiDtos> GetAllMonHocInKi(string nganhId);
+        //CTKhung AddCTKhung(AddCTKhungDtos input);
+        //PageResultDtos<CTKhung> GetAllCTKhung([FromQuery] FilterDtos input);
+        //PageResultDtos<MonHoc> GetAllMonHocInCTK([FromQuery] FilterDtos input);
+        //List<MonInKiDtos> GetAllMonHocInKi(string nganhId, string studentId);
     }
 }

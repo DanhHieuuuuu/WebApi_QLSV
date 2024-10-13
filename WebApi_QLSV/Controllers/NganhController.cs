@@ -38,5 +38,17 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("/Get-all-nganh-theo-khoa")]
+        public IActionResult GetAllNganhTheoKhoa()
+        {
+            try
+            {
+                return Ok(_nganhService.GetNganhTheoKhoa());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

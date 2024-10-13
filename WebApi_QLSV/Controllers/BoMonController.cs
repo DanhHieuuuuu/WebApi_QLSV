@@ -41,5 +41,17 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("/Get-all-bo-mon-theo-khoa")]
+        public IActionResult GetAllBoMonTheoKhoa()
+        {
+            try
+            {
+                return Ok(_bomonService.GetBoMonTheoKhoa());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

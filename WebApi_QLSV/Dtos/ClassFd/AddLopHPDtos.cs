@@ -6,6 +6,7 @@ namespace WebApi_QLSV.Dtos.ClassFd
     {
         public string? LopHPId { get; set; }
         public string TenLopHP { get; set; }
+        public string KiHocNamHoc {  get; set; }
         public int MaxStudent { get; set; }
         public string? TeacherId { get; set; }
         public string? NganhId { get; set; }

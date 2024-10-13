@@ -9,5 +9,6 @@ namespace WebApi_QLSV.Services.Interfaces
     {
         BoMon AddBoMon(AddBoMonDtos input);
         PageResultDtos<BoMon> GetAllBoMon([FromQuery] FilterDtos input);
+        List<BoMonTheoKhoaDtos> GetBoMonTheoKhoa();
     }
 }

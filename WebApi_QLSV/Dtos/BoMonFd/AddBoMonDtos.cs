@@ -8,6 +8,6 @@ namespace WebApi_QLSV.Dtos.BoMonFd
         public string TenBoMon { get; set; }
         public string? TruongBoMon { get; set; }
         public string? PhoBoMon { get; set; }
-        public int SoLuongGV { get; set; }
+        public string KhoaId { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace WebApi_QLSV.Controllers
             _khoaService = khoaService;
         }
         [HttpPost("/Add-khoa")]
-        public IActionResult AddKhoa([FromQuery] AddKhoaDtos input)
+        public IActionResult AddKhoa([FromBody] AddKhoaDtos input)
         {
             try
             {
@@ -33,6 +33,18 @@ namespace WebApi_QLSV.Controllers
             try
             {
                 return Ok(_khoaService.GetAllKhoa(input2));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("/Get-all-khoa-chi-tiet")]
+        public IActionResult GetAllKhoaDetail([FromQuery] FilterDtos input3)
+        {
+            try
+            {
+                return Ok(_khoaService.GetKhoaDetail(input3));
             }
             catch (Exception ex)
             {
