@@ -11,5 +11,6 @@ namespace WebApi_QLSV.Services.Interfaces
         Khoa AddKhoa([FromBody] AddKhoaDtos input);
         PageResultDtos<Khoa> GetAllKhoa([FromQuery] FilterDtos input);
         PageResultDtos<KhoaDetailsDtos> GetKhoaDetail([FromQuery] FilterDtos input);
+        Khoa UpdateKhoa(UpdateKhoaDtos input);
     }
 }

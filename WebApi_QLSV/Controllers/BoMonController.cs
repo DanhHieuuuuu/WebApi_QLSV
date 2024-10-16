@@ -53,5 +53,30 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("/Update-bo-mon")]
+        public IActionResult UpdateBoMon(UpdateBoMonDtos input)
+        {
+            try
+            {
+                return Ok(_bomonService.UpdateBoMon(input));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("/Delete-bo-mon")]
+        public IActionResult DeleteBoMon([FromQuery] string BoMonId)
+        {
+            try
+            {
+                _bomonService.DeleteBoMon(BoMonId);
+                return Ok("Đã xóa bộ môn");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

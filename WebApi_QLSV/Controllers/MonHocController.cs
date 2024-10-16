@@ -51,6 +51,30 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+        [HttpPut("/Update-mon-hoc")]
+        public IActionResult UpdateMonHoc(UpdateMonHoc input)
+        {
+            try
+            {
+                return Ok(_monHocService.UpdateMonHoc(input));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("/Delete-mon-hoc")]
+        public IActionResult DeleteMonHoc([FromQuery] string maMonHoc)
+        {
+            try
+            {
+                _monHocService.DeleteMonHoc(maMonHoc);
+                return Ok("Đã xóa thành công");
+            }
+            catch( Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

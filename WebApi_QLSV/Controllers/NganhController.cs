@@ -50,5 +50,30 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("/Update-nganh")]
+        public IActionResult UpdateNganh(UpdateNganhDtos input)
+        {
+            try
+            {
+                return Ok(_nganhService.UpdateNganh(input));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("/Delete-nganh")]
+        public IActionResult DeleteNganh([FromQuery] string nganhId)
+        {
+            try
+            {
+                _nganhService.DeleteNganh(nganhId);
+                return Ok("Xóa thành công ngành");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

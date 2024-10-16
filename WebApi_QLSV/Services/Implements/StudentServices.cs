@@ -642,5 +642,21 @@ namespace WebApi_QLSV.Services.Implements
             };
             return newStudent;
         }
+        public void DeleteStudent(string studentId)
+        {
+            var findStudent = _context.Students.FirstOrDefault(s => s.StudentId == studentId);
+            if (findStudent != null)
+            {
+                var findLopQL = _context.LopQLs.FirstOrDefault(l => l.LopQLId == findStudent.LopQLId);
+                findLopQL.MaxStudent = findLopQL.MaxStudent - 1;
+                _context.LopQLs.Update(findLopQL);
+                _context.Students.Remove(findStudent);
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new UserExceptions("Không tồn tại sinh viên");
+            }
+        }
     }
 }

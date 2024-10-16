@@ -33,6 +33,7 @@ namespace WebApi_QLSV.Services.Implements
                 TenBoMon = input.TenBoMon,
                 TruongBoMon = input.TruongBoMon,
                 PhoBoMon = input.PhoBoMon,
+                NgayThanhLap = input.NgayThanhLap,
                 SoLuongGV = 0,
                 KhoaId = findKhoa.KhoaId,
             };
@@ -80,6 +81,34 @@ namespace WebApi_QLSV.Services.Implements
 
             }
             return listBoMon;
+        }
+        public BoMon UpdateBoMon(UpdateBoMonDtos input)
+        {
+            var findBoMon = _context.BoMons.FirstOrDefault(b => b.BoMonId == input.BoMonId)
+                ?? throw new UserExceptions("Không tồn tại bộ môn");
+            var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId)
+                ?? throw new UserExceptions("Không tồn tại khoa");
+            findBoMon.TenBoMon = input.TenBoMon;
+            findBoMon.TruongBoMon = input.TruongBoMon;
+            findBoMon.PhoBoMon = input.PhoBoMon;
+            findBoMon.NgayThanhLap = input.NgayThanhLap;
+            findBoMon.BoMonId = input.BoMonId;
+            _context.BoMons.Update(findBoMon);
+            _context.SaveChanges();
+            return findBoMon;
+        }
+        public void DeleteBoMon(string BoMonId)
+        {
+            var findBoMon = _context.BoMons.FirstOrDefault(b => b.BoMonId ==  BoMonId);
+            if(findBoMon != null)
+            {
+                var findMonHoc = _context.MonHocs.Where(m => m.BoMonId == BoMonId).ToList();
+                var findGiangVien = _context.Teachers.Where(t => t.BoMonId == BoMonId).ToList();
+                _context.MonHocs.RemoveRange(findMonHoc);
+                _context.Teachers.RemoveRange(findGiangVien);
+            }
+            _context.BoMons.Remove(findBoMon);
+            _context.SaveChanges();
         }
     }
 }

@@ -245,6 +245,7 @@ namespace WebApi_QLSV.Services.Implements
                 Cccd = input.Cccd,
                 Birthday = input.Birthday,
                 GioiTinh = input.GioiTinh,
+                QueQuan = input.QueQuan,
                 BoMonId = input.BoMonId,
                 Password = BCrypt.Net.BCrypt.HashPassword(Password),
             };
@@ -291,6 +292,8 @@ namespace WebApi_QLSV.Services.Implements
                     Cccd = teacher.Cccd,
                     Birthday = teacher.Birthday,
                     GioiTinh = teacher.GioiTinh,
+                    QueQuan = teacher.QueQuan,
+                    UrlImage = teacher.Image,
                     Token = token,
                 };
                 return sucess;
@@ -316,6 +319,7 @@ namespace WebApi_QLSV.Services.Implements
                         Cccd = teacher.Cccd,
                         Birthday = teacher.Birthday,
                         GioiTinh = teacher.GioiTinh,
+                        QueQUan = teacher.QueQuan,
                         Image = teacher.Image,
                     };
                 var query = allTeacher.Where(e =>
@@ -361,6 +365,9 @@ namespace WebApi_QLSV.Services.Implements
                         Cccd = item1.Cccd,
                         Birthday = item1.Birthday,
                         GioiTinh = item1.GioiTinh,
+                        QueQUan = item1.QueQuan,
+                        Image = item1.QueQuan,
+                        
                     };
                     newteacher.TeacherDtoss.Add(tea);
                 }
@@ -394,6 +401,7 @@ namespace WebApi_QLSV.Services.Implements
                 || input.Email == null
                 || input.Cccd == null
                 || input.GioiTinh == null
+                || input.QueQuan == null
             )
             {
                 throw new UserExceptions("Chưa nhập đầy đủ thông tin");
@@ -417,6 +425,7 @@ namespace WebApi_QLSV.Services.Implements
             findTecher.Birthday = input.Birthday;
             findTecher.Cccd = input.Cccd;
             findTecher.GioiTinh = input.GioiTinh;
+            findTecher.QueQuan = input.QueQuan;
             if (input.Image.Length > 0)
             {
                 var path = Path.Combine(
@@ -445,10 +454,27 @@ namespace WebApi_QLSV.Services.Implements
                 Birthday = input.Birthday,
                 Cccd = input.Cccd,
                 GioiTinh = input.GioiTinh,
+                QueQUan = input.QueQuan,
                 Image = findTecher.Image,
                 BoMonId = input.BoMonId,
             };
             return newTeacher;
+        }
+        public void DeleteTeacher(string teacherId)
+        {
+            var findTeacher = _context.Teachers.FirstOrDefault( t => t.TeacherId == teacherId);
+            if (findTeacher != null)
+            {
+                var findBoMon = _context.BoMons.FirstOrDefault( t => t.BoMonId == findTeacher.BoMonId);
+                findBoMon.SoLuongGV = findBoMon.SoLuongGV - 1;
+                _context.BoMons.Update(findBoMon);
+                _context.Teachers.Remove(findTeacher);
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new UserExceptions("Không tồn tại giảng viên");
+            }
         }
     }
 }

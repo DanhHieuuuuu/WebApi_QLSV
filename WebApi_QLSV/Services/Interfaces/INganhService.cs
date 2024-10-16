@@ -8,7 +8,9 @@ namespace WebApi_QLSV.Services.Interfaces
     public interface INganhService
     {
         Nganh AddNganh(AddNganhDtos input);
+        void DeleteNganh(string nganhId);
         PageResultDtos<Nganh> GetAllNganh([FromQuery] FilterDtos input);
         List<NganhTheoKhoaDots> GetNganhTheoKhoa();
+        Nganh UpdateNganh(UpdateNganhDtos input);
     }
 }

@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
@@ -126,27 +124,40 @@ namespace WebApi_QLSV.Controllers
         //        return BadRequest(ex.Message);
         //    }
         //}
-        [HttpGet("/Get-bang-diem")]
-        public IActionResult GetBangDiem(string studentId)
-        {
-            try
-            {
-                return Ok(_studentServices.GetBangDiem(studentId));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpGet("/Get-bang-diem")]
+        //public IActionResult GetBangDiem(string studentId)
+        //{
+        //    try
+        //    {
+        //        return Ok(_studentServices.GetBangDiem(studentId));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
         [HttpPut("/Update-student")]
         public async Task<IActionResult> UpdateStudent([FromQuery] string studentId ,[FromForm] UpdateStudentDtos input)
         {
             try
             {
                 var updateStu = await _studentServices.UpdateStudent(studentId, input);
-                return Ok("Đã cập nhật thành công");
+                return Ok(updateStu);
             }
             catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("/Delete-student")]
+        public IActionResult DeleteStudent([FromQuery] string studentId)
+        {
+            try
+            {
+                _studentServices.DeleteStudent(studentId);
+                return Ok("Đã xóa sinh viên");
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

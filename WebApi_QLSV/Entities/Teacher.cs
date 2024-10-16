@@ -25,6 +25,8 @@ namespace WebApi_QLSV.Entities
             EmailAddress(ErrorMessage = "Email không đúng định dạng")
         ]
         public string Email { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
+        public string QueQuan { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string BoMonId { get; set; }

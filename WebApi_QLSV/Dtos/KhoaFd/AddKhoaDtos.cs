@@ -8,6 +8,8 @@ namespace WebApi_QLSV.Dtos.KhoaFd
         public string KhoaId { get; set; }
         [FromQuery(Name = "Tên khoa")]
         public string TenKhoa { get; set; }
+        [FromQuery(Name = "Ngày thành lập")]
+        public DateTime NgayThanhLap {  get; set; } 
 
         [FromQuery(Name = "Tên trưởng khoa")]
         public string TruongKhoa { get; set; }

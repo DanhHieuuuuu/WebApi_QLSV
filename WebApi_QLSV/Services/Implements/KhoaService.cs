@@ -11,10 +11,13 @@ namespace WebApi_QLSV.Services.Implements
     public class KhoaService : IKhoaService
     {
         private readonly ApplicationDbContext _context;
-
-        public KhoaService(ApplicationDbContext context)
+        private readonly INganhService _nganhService;
+        private readonly IBoMonService _bomonService;
+        public KhoaService(ApplicationDbContext context, INganhService nganhService, IBoMonService bomonService)
         {
             _context = context;
+            _nganhService = nganhService;
+            _bomonService = bomonService;
         }
 
         public Khoa AddKhoa([FromBody] AddKhoaDtos input)
@@ -30,6 +33,7 @@ namespace WebApi_QLSV.Services.Implements
                 TenKhoa = input.TenKhoa,
                 TruongKhoa = input.TruongKhoa,
                 PhoKhoa = input.PhoKhoa,
+                NgayThanhLap = input.NgayThanhLap
             };
             _context.Khoas.Add(result);
             _context.SaveChanges();
@@ -78,8 +82,9 @@ namespace WebApi_QLSV.Services.Implements
                          {
                              KhoaId = k.KhoaId,
                              TenKhoa = k.TenKhoa,
-                             PhoKhoa = k.PhoKhoa,
                              TruongKhoa = k.TruongKhoa,
+                             PhoKhoa = k.PhoKhoa,
+                             NgayThanhLap = k.NgayThanhLap
                          };
             var listkhoa = new List<KhoaDetailsDtos>();
             foreach (var item in group3.ToList())
@@ -116,6 +121,34 @@ namespace WebApi_QLSV.Services.Implements
             result.Items = query.ToList();
 
             return result;
+        }
+        public Khoa UpdateKhoa(UpdateKhoaDtos input)
+        {
+            var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId);
+            findKhoa.TenKhoa = input.TenKhoa;
+            findKhoa.TruongKhoa = input.TruongKhoa;
+            findKhoa.PhoKhoa = input.PhoKhoa;
+            findKhoa.NgayThanhLap = input.NgayThanhLap;
+            _context.Khoas.Update(findKhoa);
+            _context.SaveChanges();
+            return findKhoa;
+        }
+        public void DeleteKhoa(string khoaId)
+        {
+            var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == khoaId)
+                ?? throw new UserExceptions("Không tồn tại khoa");
+            var findBoMon = _context.BoMons.Where(b => b.KhoaId == khoaId).ToList();
+            var findNganh = _context.Nganhs.Where(b => b.KhoaId == khoaId).ToList();
+            foreach (var item in findBoMon)
+            {
+                _bomonService.DeleteBoMon(item.BoMonId);
+            }
+            foreach (var item in findNganh)
+            {
+                _nganhService.DeleteNganh(item.NganhId);
+            }
+            _context.Khoas.Remove(findKhoa);
+            _context.SaveChanges();
         }
     };
 }

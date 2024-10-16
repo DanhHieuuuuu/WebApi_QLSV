@@ -9,6 +9,7 @@ namespace WebApi_QLSV.Services.Interfaces
     public interface ITeacherService
     {
         Task<Teacher> AddTeacher2([FromForm] AddTeacherDtos2 input);
+        void DeleteTeacher(string teacherId);
         PageResultDtos<TeacherDtos> GetAll([FromQuery] FilterDtos input);
         PageResultDtos<TeacherInBoMon> GetAllTeacherInBoMon([FromQuery] FilterDtos input);
         ResponseLoginTeacherDtos LoginTeacher(Login input);

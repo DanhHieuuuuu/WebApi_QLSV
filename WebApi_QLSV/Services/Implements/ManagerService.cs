@@ -219,6 +219,7 @@ namespace WebApi_QLSV.Services.Implements
                 Birthday = input.Birthday,
                 Cccd = input.Cccd,
                 GioiTinh = input.GioiTinh,
+                QueQuan = input.QueQUan,
             };
             if (input.Image.Length > 0)
             {
@@ -255,6 +256,7 @@ namespace WebApi_QLSV.Services.Implements
                     Birthday=manager.Birthday,
                     Cccd = manager.Cccd,
                     GioiTinh = manager.GioiTinh,
+                    QueQuan = manager.QueQuan,
                     UrlImage = manager.Image,
                     Token = token,
                 };
@@ -278,6 +280,7 @@ namespace WebApi_QLSV.Services.Implements
                     Cccd = mng.Cccd,
                     Email = mng.Email,
                     GioiTinh = mng.GioiTinh,
+                    QueQuan = mng.QueQuan,
                     Image = mng.Image
                 };
             var query = allManager.Where(e =>
@@ -295,5 +298,6 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
+
     }
 }

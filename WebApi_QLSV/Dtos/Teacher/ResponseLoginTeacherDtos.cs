@@ -9,6 +9,7 @@
         public bool GioiTinh { get; set; }
         public string Cccd { get; set; }
         public string BoMonId { get; set; }
+        public string QueQuan { get; set; }
         public string UrlImage { get; set; }
         public string Token { get; set; }
     }

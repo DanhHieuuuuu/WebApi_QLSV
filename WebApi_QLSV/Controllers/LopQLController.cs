@@ -10,10 +10,12 @@ namespace WebApi_QLSV.Controllers
     public class LopQLController : ControllerBase
     {
         private readonly ILopQLService _lopQLService;
+
         public LopQLController(ILopQLService lopQLService)
         {
             _lopQLService = lopQLService;
         }
+
         [HttpPost("/Add-lop-quan-li")]
         public IActionResult AddLopQL(AddLopQLDtos input)
         {
@@ -26,6 +28,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("/Get-all-Class")]
         public IActionResult GetAllLopQL([FromQuery] FilterDtos input2)
         {
@@ -38,6 +41,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("/Get-all-lopQL-theo-nganh")]
         public IActionResult GetAllLopQLTheoNganh([FromQuery] FilterDtos input3)
         {
@@ -50,6 +54,30 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpPut("/Update-lop-quan-li")]
+        public IActionResult UpdateLopQL(UpdateLopQLDtos input)
+        {
+            try
+            {
+                return Ok(_lopQLService.UpdateLopQL(input));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("/Delete-lop-quan-li")]
+        public IActionResult DeleteLopQL([FromQuery] string lopQLId)
+        {
+            try
+            {
+                _lopQLService.DeleteLopQL(lopQLId);
+                return Ok("Đã xóa lớp quản lí và sinh viên trong lớp đấy");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

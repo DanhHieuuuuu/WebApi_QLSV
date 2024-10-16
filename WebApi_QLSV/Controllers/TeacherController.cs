@@ -125,5 +125,18 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpDelete("/Delete-teacher")]
+        public IActionResult DeleteTeacher([FromQuery] string teacherId)
+        {
+            try
+            {
+                _service.DeleteTeacher(teacherId);
+                return Ok("Đã xóa thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

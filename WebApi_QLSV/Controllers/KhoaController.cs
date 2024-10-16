@@ -51,5 +51,17 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("/Update-khoa")]
+        public IActionResult UpdateKhoa(UpdateKhoaDtos input)
+        {
+            try
+            {
+                return Ok(_khoaService.UpdateKhoa(input));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -8,7 +8,9 @@ namespace WebApi_QLSV.Services.Interfaces
     public interface IBoMonService
     {
         BoMon AddBoMon(AddBoMonDtos input);
+        void DeleteBoMon(string BoMonId);
         PageResultDtos<BoMon> GetAllBoMon([FromQuery] FilterDtos input);
         List<BoMonTheoKhoaDtos> GetBoMonTheoKhoa();
+        BoMon UpdateBoMon(UpdateBoMonDtos input);
     }
 }

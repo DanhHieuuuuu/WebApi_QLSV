@@ -28,7 +28,8 @@ namespace WebApi_QLSV.Services.Implements
             if (findTeacher == null)
             {
                 throw new UserExceptions("Không tồn tại mã chủ nhiệm");
-            };
+            }
+            ;
             var result = new LopQL
             {
                 LopQLId = input.TenLopQL.ToUpper(),
@@ -45,22 +46,23 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
+
         public void AddLopTruongLopPho([FromQuery] AddLTLP input, string classId)
         {
-            var findStudent = from stu in _context.Students
-                              where stu.LopQLId == classId
-                              select stu;
+            var findStudent = from stu in _context.Students where stu.LopQLId == classId select stu;
             if (findStudent == null)
             {
                 throw new UserExceptions("Lớp chưa có sinh viên");
             }
-            var findClass = _context.LopQLs.FirstOrDefault(l => l.LopQLId == classId)
+            var findClass =
+                _context.LopQLs.FirstOrDefault(l => l.LopQLId == classId)
                 ?? throw new UserExceptions($"Unable to find class {classId}");
             findClass.LopTruongId = input.LopTruongId;
             findClass.LopPhoId = input.LopPhoId;
             _context.LopQLs.Update(findClass);
             _context.SaveChanges();
         }
+
         public PageResultDtos<LopQL> GetAllLopQL([FromQuery] FilterDtos input)
         {
             var result = new PageResultDtos<LopQL>();
@@ -81,6 +83,7 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
+
         public PageResultDtos<LopQLTheoNganhDtos> getAllLopQLTheoNganh([FromQuery] FilterDtos input)
         {
             var result = new PageResultDtos<LopQLTheoNganhDtos>();
@@ -105,6 +108,35 @@ namespace WebApi_QLSV.Services.Implements
             result.Items = query.ToList();
 
             return result;
+        }
+        public LopQL UpdateLopQL(UpdateLopQLDtos input)
+        {
+            var findLopQl = _context.LopQLs.FirstOrDefault(l => l.LopQLId == input.LopQLId);
+            var findNganh = _context.Nganhs.FirstOrDefault(l => l.NganhId == input.NganhId)
+                ?? throw new UserExceptions("Không tồn tại ngành");
+            findLopQl.LopPhoId = input.LopPhoId;
+            findLopQl.LopTruongId = input.LopTruongId;
+            findLopQl.TeacherId = input.TeacherId;
+            findLopQl.NganhId = input.NganhId;
+            _context.LopQLs.Update(findLopQl);
+            _context.SaveChanges();
+            return findLopQl;
+        }
+        public void DeleteLopQL(string LopQLId)
+        {
+            var findLopQL = _context.LopQLs.FirstOrDefault( l => l.LopQLId == LopQLId);
+
+            if (findLopQL == null)
+            {
+                throw new UserExceptions("Không tồn tại lớp");
+            }
+            else
+            {
+                var findStudent = _context.Students.Where(s => s.LopQLId == LopQLId).ToList();
+                _context.Students.RemoveRange(findStudent);
+            }
+            _context.LopQLs.Remove(findLopQL);
+            _context.SaveChanges();
         }
     }
 }

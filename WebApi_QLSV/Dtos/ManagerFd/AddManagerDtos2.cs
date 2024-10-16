@@ -9,6 +9,7 @@
         public DateTime Birthday { get; set; }
         public bool GioiTinh { get; set; }
         public string Cccd { get; set; }
+        public string QueQUan { get; set; }
         public IFormFile Image { get; set; }
 
     }

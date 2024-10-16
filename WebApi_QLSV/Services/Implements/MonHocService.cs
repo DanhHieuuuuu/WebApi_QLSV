@@ -77,6 +77,32 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
+        public MonHoc UpdateMonHoc(UpdateMonHoc input)
+        {
+            var findMonHoc = _context.MonHocs.FirstOrDefault(m => m.MaMonHoc == input.MaMonHoc)
+                ?? throw new UserExceptions("Không tồn tại mã môn học");
+            var findBoMon = _context.BoMons.FirstOrDefault(b => b.BoMonId == input.BoMonId)
+                ?? throw new UserExceptions("Không tồn tại mã bộ môn");
+            findMonHoc.TenMon = input.TenMon;
+            findMonHoc.SoTin = input.SoTin;
+            findBoMon.BoMonId = input.BoMonId;
+            _context.MonHocs.Update(findMonHoc);
+            _context.SaveChanges();
+            return findMonHoc;
+        }
+        public void DeleteMonHoc(string MaMonHoc)
+        {
+            var findMonHoc = _context.MonHocs.FirstOrDefault(m => m.MaMonHoc == MaMonHoc);
+            if (findMonHoc != null)
+            {
+                _context.MonHocs.Remove(findMonHoc);
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new UserExceptions("Không tồn tại môn học");
+            }
+        }
         //public PageResultDtos<MonHocTrongNganhDtos> GetAllMonTrongNganh([FromQuery] FilterDtos input)
         //{
         //    var result = new PageResultDtos<MonHocTrongNganhDtos>();
@@ -128,5 +154,6 @@ namespace WebApi_QLSV.Services.Implements
 
         //    return result;
         //}
+
     }
 }

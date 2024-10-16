@@ -11,10 +11,11 @@ namespace WebApi_QLSV.Services.Implements
     public class NganhService : INganhService
     {
         private readonly ApplicationDbContext _context;
-
-        public NganhService(ApplicationDbContext context)
+        private readonly ILopQLService _lopQLService;
+        public NganhService(ApplicationDbContext context, ILopQLService lopQLService)
         {
             _context = context;
+            _lopQLService = lopQLService;
         }
 
         public Nganh AddNganh(AddNganhDtos input)
@@ -31,7 +32,9 @@ namespace WebApi_QLSV.Services.Implements
             {
                 NganhId = input.NganhId.ToUpper(),
                 TenNganh = input.TenNganh,
-                InfoNganh = input.InfoNganh,
+                NgayThanhLap = input.NgayThanhLap,
+                TruongNganh = input.TruongNganh,
+                PhoNganh = input.PhoNganh,
                 KhoaId = input.KhoaId.ToUpper(),
                 SumClass = 0,
             };
@@ -83,6 +86,33 @@ namespace WebApi_QLSV.Services.Implements
                 
             }
             return listNganh;
+        }
+        public Nganh UpdateNganh(UpdateNganhDtos input)
+        {
+            var findNganh = _context.Nganhs.FirstOrDefault(n => n.NganhId == input.NganhId)
+                ?? throw new UserExceptions("Không tìm thấy ngành");
+            var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId)
+                ?? throw new UserExceptions("Không tìm thấy khoa");
+            findNganh.TenNganh = input.TenNganh;
+            findNganh.TruongNganh = input.TruongNganh;
+            findNganh.PhoNganh = input.PhoNganh;
+            findNganh.NgayThanhLap = input.NgayThanhLap;
+            findNganh.KhoaId = input.KhoaId;
+            _context.Nganhs.Update(findNganh);
+            _context.SaveChanges();
+            return findNganh;
+        }
+        public void DeleteNganh(string nganhId)
+        {
+            var findNganh = _context.Nganhs.FirstOrDefault(n => n.NganhId == nganhId)
+                ?? throw new UserExceptions("Không tồn tại ngành");
+            var findLopQL = _context.LopQLs.Where(l => l.NganhId == nganhId).ToList();
+            foreach (var item in findLopQL)
+            {
+                _lopQLService.DeleteLopQL(item.LopQLId);
+            }
+            _context.Nganhs.Remove(findNganh);
+            _context.SaveChanges();
         }
     }
 }

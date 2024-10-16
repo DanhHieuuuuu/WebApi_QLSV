@@ -16,6 +16,7 @@ namespace WebApi_QLSV.Services.Interfaces
         PageResultDtos<StudentInClass> GetAllStudentInClass([FromQuery] FilterDtos input);
         Task<Student> AddStudent2(AddStudentDtos2 input);
         Task<StudentDtos> UpdateStudent([FromQuery] string studentId, [FromForm] UpdateStudentDtos input);
+        void DeleteStudent(string studentId);
         //PageResultDtos<StudentInClassDtos> GetAllStudentInLopHP([FromQuery] FilterDtos input, [FromQuery] string ClassName);
     }
 }

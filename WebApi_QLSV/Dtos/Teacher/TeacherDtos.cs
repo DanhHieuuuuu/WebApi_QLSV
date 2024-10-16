@@ -10,6 +10,7 @@ namespace WebApi_QLSV.Dtos.Teacher
         public DateTime Birthday { get; set; }
         public bool GioiTinh { get; set; }
         public string Cccd { get; set; }
+        public string QueQUan { get; set; }
         public string BoMonId { get; set; }
         public string Image {  get; set; }
     }

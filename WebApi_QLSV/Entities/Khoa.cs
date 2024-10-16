@@ -18,5 +18,7 @@ namespace WebApi_QLSV.Entities
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string? PhoKhoa { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
+        public DateTime? NgayThanhLap { get; set; }
     }
 }

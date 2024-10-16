@@ -15,6 +15,7 @@ namespace WebApi_QLSV.Dtos.Teacher
 
         public string Email { get; set; }
 
+        public string QueQuan { get; set; }
         public string BoMonId { get; set; }
 
         public IFormFile Image { get; set; }
