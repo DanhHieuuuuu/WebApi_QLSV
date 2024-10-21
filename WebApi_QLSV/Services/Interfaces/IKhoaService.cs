@@ -9,6 +9,7 @@ namespace WebApi_QLSV.Services.Interfaces
     public interface IKhoaService
     {
         Khoa AddKhoa([FromBody] AddKhoaDtos input);
+        void DeleteKhoa(string khoaId);
         PageResultDtos<Khoa> GetAllKhoa([FromQuery] FilterDtos input);
         PageResultDtos<KhoaDetailsDtos> GetKhoaDetail([FromQuery] FilterDtos input);
         Khoa UpdateKhoa(UpdateKhoaDtos input);

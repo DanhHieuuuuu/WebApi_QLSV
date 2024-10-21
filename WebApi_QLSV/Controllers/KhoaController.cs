@@ -63,5 +63,18 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpDelete("/Delete-khoa")]
+        public IActionResult DeleteKhoa(string khoaId)
+        {
+            try
+            {
+                _khoaService.DeleteKhoa(khoaId);
+                return Ok("Đã xóa thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

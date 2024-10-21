@@ -54,6 +54,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPut("/Update-lop-quan-li")]
         public IActionResult UpdateLopQL(UpdateLopQLDtos input)
         {
