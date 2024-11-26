@@ -6,6 +6,8 @@ namespace WebApi_QLSV.Dtos.ClassFd
     {
         public string LopQLId { get; set; }
 
+        public string TenLopQL { get; set; }
+
         public string? NganhId { get; set; }
 
         public string? LopTruongId { get; set; }

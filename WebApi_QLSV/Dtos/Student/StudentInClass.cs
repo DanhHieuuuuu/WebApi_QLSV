@@ -2,7 +2,8 @@
 {
     public class StudentInClass
     {
-        public string Class { get; set; }
+        public string LopQLId { get; set; }
+        public string TenLopQL { get; set; }
         public List<StudentDtos> StudentDtoss { get; set; } = new List<StudentDtos>();
     }
 }

@@ -27,12 +27,13 @@ namespace WebApi_QLSV.Services.Implements
             {
                 throw new UserExceptions("Đã tồn tại mã bộ môn");
             }
+
             var results = new BoMon
             {
                 BoMonId = input.BoMonId.ToUpper(),
                 TenBoMon = input.TenBoMon,
-                TruongBoMon = input.TruongBoMon,
-                PhoBoMon = input.PhoBoMon,
+                TruongBoMon = input.TruongBoMonId,
+                PhoBoMon = input.PhoBoMonId,
                 NgayThanhLap = input.NgayThanhLap,
                 SoLuongGV = 0,
                 KhoaId = findKhoa.KhoaId,
@@ -89,8 +90,8 @@ namespace WebApi_QLSV.Services.Implements
             var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId)
                 ?? throw new UserExceptions("Không tồn tại khoa");
             findBoMon.TenBoMon = input.TenBoMon;
-            findBoMon.TruongBoMon = input.TruongBoMon;
-            findBoMon.PhoBoMon = input.PhoBoMon;
+            findBoMon.TruongBoMon = input.TruongBoMonId;
+            findBoMon.PhoBoMon = input.PhoBoMonId;
             findBoMon.NgayThanhLap = input.NgayThanhLap;
             findBoMon.BoMonId = input.BoMonId;
             _context.BoMons.Update(findBoMon);

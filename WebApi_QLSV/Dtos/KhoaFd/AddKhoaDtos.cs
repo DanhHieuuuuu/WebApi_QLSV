@@ -12,8 +12,8 @@ namespace WebApi_QLSV.Dtos.KhoaFd
         public DateTime NgayThanhLap {  get; set; } 
 
         [FromQuery(Name = "Tên trưởng khoa")]
-        public string TruongKhoa { get; set; }
+        public string? TruongKhoa { get; set; }
         [FromQuery(Name = "Tên phó khoa")]
-        public string PhoKhoa { get; set; }
+        public string? PhoKhoa { get; set; }
     }
 }

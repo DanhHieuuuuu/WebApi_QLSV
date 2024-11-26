@@ -11,6 +11,7 @@ namespace WebApi_QLSV.Dtos.Student
         public string? Email { get; set; }
         public DateTime Birthday { get; set; } = DateTime.Now;
 
+        public string? LopQLId { get; set; }
         public string? TenLopQL { get; set; }
 
         public string? QueQuan { get; set; }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.NganhFd;
 using WebApi_QLSV.Services.Interfaces;
@@ -14,6 +15,8 @@ namespace WebApi_QLSV.Controllers
         {
             _nganhService = nganhService;
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpPost("/Add-nganh")]
         public IActionResult AddNganh(AddNganhDtos input)
         {
@@ -26,6 +29,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpGet("/Get-all-nganh")]
         public IActionResult GetAllNganh([FromQuery] FilterDtos input2)
         {
@@ -38,6 +43,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpGet("/Get-all-nganh-theo-khoa")]
         public IActionResult GetAllNganhTheoKhoa()
         {
@@ -50,6 +57,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpPut("/Update-nganh")]
         public IActionResult UpdateNganh(UpdateNganhDtos input)
         {
@@ -62,6 +71,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpDelete("/Delete-nganh")]
         public IActionResult DeleteNganh([FromQuery] string nganhId)
         {

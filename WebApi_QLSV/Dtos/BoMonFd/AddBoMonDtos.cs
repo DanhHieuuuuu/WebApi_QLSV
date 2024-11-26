@@ -6,8 +6,8 @@ namespace WebApi_QLSV.Dtos.BoMonFd
     {
         public string BoMonId { get; set; }
         public string TenBoMon { get; set; }
-        public string? TruongBoMon { get; set; }
-        public string? PhoBoMon { get; set; }
+        public string? TruongBoMonId { get; set; }
+        public string? PhoBoMonId { get; set; }
         public DateTime NgayThanhLap { get; set; }
         public string KhoaId { get; set; }
     }

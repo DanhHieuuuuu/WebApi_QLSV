@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi_QLSV.DbContexts;
@@ -24,6 +25,7 @@ namespace WebApi_QLSV.Controllers
             _context = applicationDbContext;
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPost("/Add-teacher")]
         public async Task<IActionResult> AddTeacher2([FromForm] AddTeacherDtos2 input4)
         {
@@ -38,6 +40,126 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
+        [HttpPost("/Login-teacher")]
+        public IActionResult LogionTeacher(Login input2)
+        {
+            try
+            {
+                return Ok(_service.LoginTeacher(input2));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Manager")]
+        [HttpPost("/Add-teacher-to-mon-hoc")]
+        public IActionResult AddTeachertoMonHoc( List<string> listTeacher, string maMonHoc)
+        {
+            try
+            {
+                _service.AddTeachertoMonHoc(listTeacher, maMonHoc);
+                return Ok("Thêm thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/Get-all-teacher")]
+        public IActionResult GetAll(FilterDtos input3)
+        {
+            try
+            {
+                return Ok(_service.GetAll(input3));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/Get-all-teacher-moi-bo-mon")]
+        public IActionResult GetAllTeacherPerBoMon([FromQuery] FilterDtos inpu4)
+        {
+            try
+            {
+                return Ok(_service.GetAllTeacherPerBoMon(inpu4));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/get-lop-chu-nhiem")]
+        public IActionResult GetLopChuNhiem([FromQuery] string teacherId)
+        {
+            try
+            {
+                return Ok(_service.GetStudentInLopQl(teacherId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/get-all-teacher-in-bo-mon")]
+        public IActionResult GetAllTeacherInBoMon(string? boMonId)
+        {
+            try
+            {
+                return Ok(_service.GetAllTeacherInBoMon(boMonId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/get-all-teacher-in-khoa")]
+        public IActionResult getAllTeacherInKhoa(string? khoaId)
+        {
+            try
+            {
+                return Ok(_service.GetAllTeacherInKhoa(khoaId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/get-all-teacher-mon-hoc")]
+        public IActionResult GetAllTeacherMonHoc([FromQuery] FilterDtos input, string teacherId)
+        {
+            try
+            {
+                return Ok(_service.GetAllTeacherMonHoc(input, teacherId));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/get-teacher-by-id")]
+        public IActionResult GetAllTeacherById([FromQuery] FilterDtos input,[FromQuery] List<string> teacherId)
+        {
+            try
+            {
+                return Ok(_service.GetTeacherById(input, teacherId));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Manager")]
         [HttpPut("/update-image-teacher")]
         public async Task<IActionResult> UpdateImageTeacher([FromForm] AddImageDtos input3)
         {
@@ -74,44 +196,7 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [HttpPost("/Login-teacher")]
-        public IActionResult LogionTeacher(Login input2)
-        {
-            try
-            {
-                return Ok(_service.LoginTeacher(input2));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("/Get-all-teacher")]
-        public IActionResult GetAll(FilterDtos input3)
-        {
-            try
-            {
-                return Ok(_service.GetAll(input3));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("/Get-all-teacher-in-bo-mon")]
-        public IActionResult GetAllTeacherInBoMon([FromQuery] FilterDtos inpu4)
-        {
-            try
-            {
-                return Ok(_service.GetAllTeacherInBoMon(inpu4));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPut("/Update-teacher")]
         public async Task<IActionResult> UpdateTeacher([FromQuery] string teacherId, [FromForm] UpdateTeacherDtos input)
         {
@@ -125,6 +210,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpDelete("/Delete-teacher")]
         public IActionResult DeleteTeacher([FromQuery] string teacherId)
         {
@@ -138,5 +225,21 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
+        [HttpDelete("/Delete-teacher-khoi-mon-hoc")]
+        public IActionResult DeleteTeacherToMonHoc([FromQuery] string teacherId, string maMonHoc)
+        {
+            try
+            {
+                _service.RemoveTeacherToMonHoc(teacherId, maMonHoc);
+                return Ok("Đã xóa thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

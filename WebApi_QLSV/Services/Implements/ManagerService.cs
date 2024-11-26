@@ -7,7 +7,6 @@ using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.ManagerFd;
-using WebApi_QLSV.Dtos.Student;
 using WebApi_QLSV.Entities;
 using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
@@ -31,6 +30,7 @@ namespace WebApi_QLSV.Services.Implements
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, "Manager")
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtsettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -297,6 +297,76 @@ namespace WebApi_QLSV.Services.Implements
             result.Items = query.ToList();
 
             return result;
+        }
+
+        public async Task<ManagerDtos> UpdateManager(
+            [FromQuery] string managerId,
+            [FromForm] UpdateManagerDtos input
+        )
+        {
+            var findManager =
+                _context.Managers.SingleOrDefault(s => s.ManagerId == managerId)
+                ?? throw new UserExceptions("Không tồn tại quản lí");
+            var checkCccd = _context.Managers.Count(s => s.Cccd == input.Cccd);
+            if (
+                input.Username == null
+                || input.QueQuan == null
+                || input.Cccd == null
+                || input.GioiTinh == null
+            )
+            {
+                throw new UserExceptions("Chưa nhập đầy đủ thông tin");
+            }
+            if (checkCccd >= 2)
+            {
+                throw new UserExceptions("Đã tồn tại Căn cước công dân");
+            }
+
+            findManager.Username = input.Username;
+            findManager.Birthday = input.Birthday;
+            findManager.QueQuan = input.QueQuan;
+            findManager.Cccd = input.Cccd;
+            findManager.GioiTinh = input.GioiTinh;
+            if (input.Image == null)
+            {
+                findManager.Image = findManager.Image;
+            }
+            else
+            {
+                if (input.Image.Length > 0)
+                {
+                    var path = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        "Images",
+                        input.Image.FileName
+                    );
+                    using (var stream = System.IO.File.Create(path))
+                    {
+                        await input.Image.CopyToAsync(stream);
+                    }
+                    findManager.Image = "/images/" + input.Image.FileName;
+                }
+                else
+                {
+                    throw new UserExceptions("Không có file");
+                }
+            }
+            _context.Managers.Update(findManager);
+            _context.SaveChanges();
+            var newManager = new ManagerDtos
+            {
+                ManagerId = findManager.ManagerId,
+                Username = input.Username,
+                Email = findManager.Email,
+                Birthday = input.Birthday,
+                QueQuan = input.QueQuan,
+                Cccd = input.Cccd,
+                GioiTinh = input.GioiTinh,
+                Image = findManager.Image,
+                
+            };
+            return newManager;
         }
 
     }

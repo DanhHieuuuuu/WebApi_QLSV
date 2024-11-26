@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Services.Implements;
 using WebApi_QLSV.Services.Interfaces;
-using WebApi_QLSV.Services.Interfaces.StudentAndClassFd;
 
 namespace WebApi_QLSV
 {
@@ -51,16 +50,12 @@ namespace WebApi_QLSV
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IStudentServices, StudentServices>();
-            builder.Services.AddScoped<IClassStudentService, ClassStudentService>();
             builder.Services.AddScoped<ITeacherService, TeacherService>();
             builder.Services.AddScoped<IManagerService, ManagerService>();
             builder.Services.AddScoped<IKhoaService, KhoaService>();
-            builder.Services.AddScoped<ICTKhungService, CTKhungService>();
             builder.Services.AddScoped<INganhService, NganhService>();
             builder.Services.AddScoped<ILopQLService, LopQLService>();
             builder.Services.AddScoped<IBoMonService, BoMonService>();
-            builder.Services.AddScoped<IBlockService, BlockService>();
-            builder.Services.AddScoped<ILopHPService, LopHPService>();
             builder.Services.AddScoped<ICauHoiService, CauHoiService>();
             builder.Services.AddScoped<IMonHocService, MonHocService>();
             builder.Services.AddDbContext<ApplicationDbContext>(option =>
@@ -105,7 +100,7 @@ namespace WebApi_QLSV
             // Sử dụng middleware để phục vụ các tệp tĩnh
             app.UseStaticFiles();
             //app.Run("http://192.168.59.229:5024");
-
+            //app.Urls.Add("http://192.168.1.2:5000");
             app.Run();
         }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.MonHocFd;
@@ -15,6 +16,8 @@ namespace WebApi_QLSV.Controllers
         {
             _monHocService = monHocService;
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpPost("/Add-Mon-Hoc")]
         public IActionResult AddMonHoc(AddMonHocDtos input)
         {
@@ -27,6 +30,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("/Get-all-mon-hoc")]
         public IActionResult GetMonHoc([FromQuery] FilterDtos input3)
         {
@@ -39,18 +43,47 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("/Get-Mon-Hoc-Theo-Bo-Mon")]
         public IActionResult GetAllMonHocTrongBoMon([FromQuery] FilterDtos input2)
         {
             try
             {
-                return Ok(_monHocService.GetAllMonTrongNganh(input2));
+                return Ok(_monHocService.GetAllMonTrongBoMon(input2));
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("/Get-all-mon-hoc-chi-tiet")]
+        public IActionResult GetAllMonHocChiTiet([FromQuery] FilterDtos input4)
+        {
+            try
+            {
+                return Ok(_monHocService.GetMonHocDetail(input4));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/Get-teacher-phu-trach")]
+        public IActionResult GetTeacherPhuTrach([FromQuery] FilterDtos input4, string maMonHoc)
+        {
+            try
+            {
+                return Ok(_monHocService.GetTeacherPhuTrach(maMonHoc, input4));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Manager")]
         [HttpPut("/Update-mon-hoc")]
         public IActionResult UpdateMonHoc(UpdateMonHoc input)
         {
@@ -63,6 +96,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpDelete("/Delete-mon-hoc")]
         public IActionResult DeleteMonHoc([FromQuery] string maMonHoc)
         {

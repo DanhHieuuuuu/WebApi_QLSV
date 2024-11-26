@@ -5,6 +5,7 @@ namespace WebApi_QLSV.Dtos.Teacher
     public class TeacherInBoMon
     {
         public string BoMon { get; set; }
+        public string TenBoMon { get; set; }
         public List<TeacherDtos> TeacherDtoss { get; set; } = new List<TeacherDtos>();
     }
 }

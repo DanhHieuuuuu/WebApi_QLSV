@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi_QLSV.DbContexts;
@@ -37,6 +38,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
         [HttpPut("/update-image-manager")]
         public async Task<IActionResult> UpdateImageManager([FromForm] AddImageDtos input3)
         {
@@ -72,6 +74,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
         [HttpPost("/Login-manager")]
         public IActionResult LoginManager(Login input2)
         {
@@ -84,12 +87,29 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("/Get-all-quan-li")]
         public IActionResult GetAllManager([FromQuery] FilterDtos input3)
         {
             try
             {
                 return Ok(_managerService.GetAllManager(input3));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [Authorize(Roles = "Manager,Teacher")]
+        [HttpPut("/Update-manager")]
+        public async Task<IActionResult> UpdateManager([FromQuery] string managerId, [FromForm] UpdateManagerDtos input)
+        {
+            try
+            {
+                var result = await _managerService.UpdateManager(managerId, input);
+                return Ok(result);
             }
             catch (Exception ex)
             {

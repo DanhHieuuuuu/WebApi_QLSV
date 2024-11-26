@@ -9,7 +9,7 @@ namespace WebApi_QLSV.Dtos.NganhFd
         public string? TenNganh { get; set; }
         public string KhoaId { get; set; }
         public DateTime NgayThanhLap {  get; set; }
-        public string TruongNganh { get; set; }
-        public string PhoNganh { get; set; }
+        public string? TruongNganhId { get; set; }
+        public string? PhoNganhId { get; set; }
     }
 }

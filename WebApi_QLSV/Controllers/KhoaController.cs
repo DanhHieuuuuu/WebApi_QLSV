@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.KhoaFd;
@@ -15,6 +16,8 @@ namespace WebApi_QLSV.Controllers
         {
             _khoaService = khoaService;
         }
+
+        [Authorize(Roles="Manager")]
         [HttpPost("/Add-khoa")]
         public IActionResult AddKhoa([FromBody] AddKhoaDtos input)
         {
@@ -27,6 +30,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
+        [Authorize(Roles = "Manager")]
         [HttpGet("/Get-all-khoa")]
         public IActionResult GetAllKhoa([FromQuery] FilterDtos input2)
         {
@@ -39,6 +44,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpGet("/Get-all-khoa-chi-tiet")]
         public IActionResult GetAllKhoaDetail([FromQuery] FilterDtos input3)
         {
@@ -51,6 +58,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpPut("/Update-khoa")]
         public IActionResult UpdateKhoa(UpdateKhoaDtos input)
         {
@@ -63,6 +72,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpDelete("/Delete-khoa")]
         public IActionResult DeleteKhoa(string khoaId)
         {

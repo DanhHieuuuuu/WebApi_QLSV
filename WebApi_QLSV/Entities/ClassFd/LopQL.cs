@@ -11,6 +11,9 @@ namespace WebApi_QLSV.Entities.ClassFd
         public string LopQLId { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
+        public string TenLopQL {  get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string? NganhId { get; set; }
 
         [Required]

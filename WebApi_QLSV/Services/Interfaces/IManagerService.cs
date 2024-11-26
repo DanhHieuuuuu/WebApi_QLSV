@@ -11,5 +11,6 @@ namespace WebApi_QLSV.Services.Interfaces
         Task<Manager> AddManager2([FromForm] AddManagerDtos2 input);
         PageResultDtos<ManagerDtos> GetAllManager([FromQuery] FilterDtos input);
         ResponseLoginManagerDtos LoginManager(Login input);
+        Task<ManagerDtos> UpdateManager([FromQuery] string managerId, [FromForm] UpdateManagerDtos input);
     }
 }

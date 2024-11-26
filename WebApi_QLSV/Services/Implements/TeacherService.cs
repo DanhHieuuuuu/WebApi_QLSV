@@ -11,6 +11,7 @@ using WebApi_QLSV.Dtos.Teacher;
 using WebApi_QLSV.Entities;
 using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebApi_QLSV.Services.Implements
 {
@@ -31,6 +32,8 @@ namespace WebApi_QLSV.Services.Implements
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, "Teacher")
+
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtsettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -277,7 +280,7 @@ namespace WebApi_QLSV.Services.Implements
             var teacher =
                 _context.Teachers.SingleOrDefault(x => x.Email == input.Email)
                 ?? throw new UserExceptions("Không tồn tại tài khoản");
-
+            var findBM = _context.BoMons.FirstOrDefault(x => x.BoMonId == teacher.BoMonId);
             bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, teacher.Password);
             var token = Createtokens(teacher.TenGiangVien);
 
@@ -288,6 +291,7 @@ namespace WebApi_QLSV.Services.Implements
                     TeacherId = teacher.TeacherId,
                     TenGiangVien = teacher.TenGiangVien,
                     Email = teacher.Email,
+                    TenBoMon = findBM.TenBoMon,
                     BoMonId = teacher.BoMonId,
                     Cccd = teacher.Cccd,
                     Birthday = teacher.Birthday,
@@ -324,7 +328,7 @@ namespace WebApi_QLSV.Services.Implements
                     };
                 var query = allTeacher.Where(e =>
                     string.IsNullOrEmpty(input.KeyWord)
-                    || e.TenGiangVien.ToLower().Contains(input.KeyWord.ToLower())
+                    || e.BoMonId.ToLower().Contains(input.KeyWord.ToLower())
                 );
                 result.TotalItem = query.Count();
 
@@ -340,36 +344,117 @@ namespace WebApi_QLSV.Services.Implements
             }
         }
 
-        public PageResultDtos<TeacherInBoMon> GetAllTeacherInBoMon([FromQuery] FilterDtos input)
+        public List<TeacherDtos> GetAllTeacherInBoMon( string? boMonId)
+        {
+            {
+                var allTeacher =
+                    from teacher in _context.Teachers
+                    where teacher.BoMonId == boMonId
+                    select new TeacherDtos
+                    {
+                        TeacherId = teacher.TeacherId,
+                        TenGiangVien = teacher.TenGiangVien,
+                        Email = teacher.Email,
+                        BoMonId = teacher.BoMonId,
+                        Cccd = teacher.Cccd,
+                        Birthday = teacher.Birthday,
+                        GioiTinh = teacher.GioiTinh,
+                        QueQUan = teacher.QueQuan,
+                        Image = teacher.Image,
+                    };
+
+
+                allTeacher = allTeacher
+                    .OrderBy(e => e.TenGiangVien)
+                    .ThenBy(e => e.BoMonId);
+
+                return allTeacher.ToList();
+            }
+        }
+        public List<TeacherDtos> GetAllTeacherInKhoa(string? khoaId)
+        {
+            {
+                var allTeacher =
+                    from k in _context.Khoas
+                    join b in _context.BoMons on k.KhoaId equals b.KhoaId
+                    join teacher in _context.Teachers on b.BoMonId equals teacher.BoMonId
+                    where k.KhoaId == khoaId
+                    select new TeacherDtos
+                    {
+                        TeacherId = teacher.TeacherId,
+                        TenGiangVien = teacher.TenGiangVien,
+                        Email = teacher.Email,
+                        BoMonId = teacher.BoMonId,
+                        Cccd = teacher.Cccd,
+                        Birthday = teacher.Birthday,
+                        GioiTinh = teacher.GioiTinh,
+                        QueQUan = teacher.QueQuan,
+                        Image = teacher.Image,
+                    };
+
+
+                allTeacher = allTeacher
+                    .OrderBy(e => e.TenGiangVien)
+                    .ThenBy(e => e.BoMonId);
+
+                return allTeacher.ToList();
+            }
+        }
+
+        public PageResultDtos<TeacherInBoMon> GetAllTeacherPerBoMon([FromQuery] FilterDtos input)
         {
             var result = new PageResultDtos<TeacherInBoMon>();
-            var group = _context
-                .Teachers.GroupBy(t => t.BoMonId)
+            var group2 = from t in _context.Teachers
+                         join bm in _context.BoMons on t.BoMonId equals bm.BoMonId
+                         select new
+                         {
+                             bomon = bm.BoMonId,
+                             tenBoMon = bm.TenBoMon,
+                             teacherId = t.TeacherId,
+                             tenGiangVien = t.TenGiangVien,
+                             email = t.Email,
+                             cccd = t.Cccd,
+                             birthday = t.Birthday,
+                             gioiTinh = t.GioiTinh,
+                             queQUan = t.QueQuan,
+                             image = t.Image
+                         };
+
+            var group1 = group2.GroupBy(t => t.bomon)
                 .Select(t => new
                 {
                     boMon = t.Key,
-                    teacher = t.OrderBy(o => o.TenGiangVien).ToList(),
-                });
+                    teacher = t.OrderBy(o => o.tenGiangVien).Select(item1 => new TeacherDtos
+                    {
+                        TeacherId = item1.teacherId,
+                        TenGiangVien = item1.tenGiangVien,
+                        Email = item1.email,
+                        Cccd = item1.cccd,
+                        Birthday = item1.birthday,
+                        GioiTinh = item1.gioiTinh,
+                        QueQUan = item1.queQUan,
+                        Image = item1.image,
+                        BoMonId = item1.bomon
+                    }).ToList(),
+                }).ToList();
+            var group = from bm in _context.BoMons
+                        select new
+                        {
+                            bm.BoMonId,
+                            bm.TenBoMon
+                        };
             var listTeacher = new List<TeacherInBoMon>();
             foreach (var item in group)
             {
                 var newteacher = new TeacherInBoMon();
-                newteacher.BoMon = item.boMon;
-                foreach (var item1 in item.teacher)
+                newteacher.BoMon = item.BoMonId;
+                newteacher.TenBoMon = item.TenBoMon;
+                foreach (var item1 in group1)
                 {
-                    var tea = new TeacherDtos
-                    {
-                        TeacherId = item1.TeacherId,
-                        TenGiangVien = item1.TenGiangVien,
-                        Email = item1.Email,
-                        Cccd = item1.Cccd,
-                        Birthday = item1.Birthday,
-                        GioiTinh = item1.GioiTinh,
-                        QueQUan = item1.QueQuan,
-                        Image = item1.QueQuan,
-                        
-                    };
-                    newteacher.TeacherDtoss.Add(tea);
+                    if(item1.boMon == item.BoMonId)
+                    {   
+                        newteacher.TeacherDtoss = item1.teacher;
+                    }
                 }
                 listTeacher.Add(newteacher);
             }
@@ -379,7 +464,7 @@ namespace WebApi_QLSV.Services.Implements
             );
             result.TotalItem = query.Count();
 
-            query = query.OrderBy(e => e.BoMon).Skip(input.Skip()).Take(input.PageSize);
+            query = query.OrderByDescending(e => e.TeacherDtoss.Count).OrderBy(e => e.BoMon).Skip(input.Skip()).Take(input.PageSize);
 
             result.Items = query.ToList();
 
@@ -396,9 +481,9 @@ namespace WebApi_QLSV.Services.Implements
                 ?? throw new UserExceptions("Không tồn tại giảng viên");
             var checkCccd = _context.Teachers.Count(s => s.Cccd == input.Cccd);
             var checkBoMon = _context.BoMons.FirstOrDefault(t => t.BoMonId == input.BoMonId);
+            
             if (
                 input.TenGiangVien == null
-                || input.Email == null
                 || input.Cccd == null
                 || input.GioiTinh == null
                 || input.QueQuan == null
@@ -419,38 +504,48 @@ namespace WebApi_QLSV.Services.Implements
                 checkBoMon.SoLuongGV += 1;
                 var findBoMon = _context.BoMons.SingleOrDefault(b => b.BoMonId == findTecher.BoMonId);
                 findBoMon.SoLuongGV -= 1;
+                _context.BoMons.Update(findBoMon);
+
             }
             findTecher.TenGiangVien = input.TenGiangVien;
-            findTecher.Email = input.Email;
             findTecher.Birthday = input.Birthday;
             findTecher.Cccd = input.Cccd;
             findTecher.GioiTinh = input.GioiTinh;
             findTecher.QueQuan = input.QueQuan;
-            if (input.Image.Length > 0)
+            findTecher.BoMonId = input.BoMonId;
+            if(input.Image == null)
             {
-                var path = Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "wwwroot",
-                    "Images",
-                    input.Image.FileName
-                );
-                using (var stream = System.IO.File.Create(path))
-                {
-                    await input.Image.CopyToAsync(stream);
-                }
-                findTecher.Image = "/images/" + input.Image.FileName;
+                findTecher.Image = findTecher.Image;
             }
             else
             {
-                throw new UserExceptions("Không có file");
+                if (input.Image.Length > 0)
+                {
+                    var path = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        "Images",
+                        input.Image.FileName
+                    );
+                    using (var stream = System.IO.File.Create(path))
+                    {
+                        await input.Image.CopyToAsync(stream);
+                    }
+                    findTecher.Image = "/images/" + input.Image.FileName;
+                }
+                else
+                {
+                    throw new UserExceptions("Không có file");
+                }
             }
+            _context.BoMons.Update(checkBoMon);
             _context.Teachers.Update(findTecher);
             _context.SaveChanges();
             var newTeacher = new TeacherDtos
             {
                 TeacherId = findTecher.TeacherId,
                 TenGiangVien = input.TenGiangVien,
-                Email = input.Email,
+                Email = findTecher.Email,
                 Birthday = input.Birthday,
                 Cccd = input.Cccd,
                 GioiTinh = input.GioiTinh,
@@ -460,21 +555,148 @@ namespace WebApi_QLSV.Services.Implements
             };
             return newTeacher;
         }
+
         public void DeleteTeacher(string teacherId)
         {
-            var findTeacher = _context.Teachers.FirstOrDefault( t => t.TeacherId == teacherId);
-            if (findTeacher != null)
-            {
-                var findBoMon = _context.BoMons.FirstOrDefault( t => t.BoMonId == findTeacher.BoMonId);
-                findBoMon.SoLuongGV = findBoMon.SoLuongGV - 1;
-                _context.BoMons.Update(findBoMon);
-                _context.Teachers.Remove(findTeacher);
-                _context.SaveChanges();
-            }
-            else
-            {
-                throw new UserExceptions("Không tồn tại giảng viên");
-            }
+            var findTeacher = _context.Teachers.FirstOrDefault( t => t.TeacherId == teacherId)
+                ?? throw new UserExceptions("Không tồn tại giảng viên");
+            var findBoMon = _context.BoMons.FirstOrDefault( t => t.BoMonId == findTeacher.BoMonId);
+            findBoMon.SoLuongGV = findBoMon.SoLuongGV - 1;
+            _context.BoMons.Update(findBoMon);
+            var findMQH = _context.Teacher_MonHocs.Where(t => t.TeacherId == teacherId).ToList();
+
+            _context.Teacher_MonHocs.RemoveRange(findMQH);
+            _context.SaveChanges();
+
+            _context.Teachers.Remove(findTeacher);
+            _context.SaveChanges();
         }
+
+        public void AddTeachertoMonHoc( List<string> listTeacher, string maMonHoc)
+        {
+            var findMonHoc = _context.MonHocs.FirstOrDefault(m => m.MaMonHoc == maMonHoc)
+                ?? throw new UserExceptions("Không tồn tại mã môn học");
+
+            
+            foreach (var item in listTeacher)
+            {
+                var findteacher = _context.Teachers.Any(t => t.TeacherId == item);
+                if (!findteacher) { throw new UserExceptions("Không tồn tại mã giảng viên"); };
+
+                var checkTeacher = _context.Teachers.Any(t => t.BoMonId == findMonHoc.BoMonId);
+                if (!checkTeacher) { throw new UserExceptions("Không tồn tại mã giảng viên"); };
+                var result = new Teacher_MonHoc
+                {
+                    MaMonHoc = maMonHoc,
+                    TeacherId = item
+                };
+                _context.Teacher_MonHocs.Add(result);
+            }
+            _context.SaveChanges();
+        }
+        public void RemoveTeacherToMonHoc([FromQuery] string teacherId, string maMonHoc)
+        {
+            var findTeac = _context.Teachers.Any(t => t.TeacherId == teacherId);
+            if (!findTeac) { throw new UserExceptions("Không tồn tại mã giảng viên"); };
+            var findMH = _context.MonHocs.Any(m => m.MaMonHoc == maMonHoc);
+            if (!findMH) { throw new UserExceptions("Không tồn tại mã môn học"); };
+            var ttm = new Teacher_MonHoc
+            {
+                MaMonHoc = maMonHoc,
+                TeacherId = teacherId,
+            };
+            _context.Teacher_MonHocs.Remove(ttm);
+            _context.SaveChanges();
+        }
+
+        public StudentInLopQLDtos GetStudentInLopQl([FromQuery] string teacherId)
+        {
+            var result = new StudentInLopQLDtos();
+
+            var findLop = _context.LopQLs.FirstOrDefault(s => s.TeacherId == teacherId);
+            if (findLop == null) { return result; }
+
+            var findStud = from s in _context.Students
+                           where s.LopQLId == findLop.LopQLId
+                           select new StudentDtos
+                           {
+                               StudentId = s.StudentId,
+                               Username = s.Username,
+                               Email = s.Email,
+                               Cccd = s.Cccd,
+                               QueQuan = s.QueQuan,
+                               Image = s.Image,
+                               GioiTinh = s.GioiTinh,
+                               NienKhoa = s.NienKhoa,
+                               Birthday = s.Birthday,
+                           };
+
+            result.LopQlId = findLop.LopQLId;
+            result.TenLopQl = findLop.TenLopQL;
+            result.LopTruongId = findLop.LopTruongId;
+            result.LopPhoId = findLop.LopPhoId;
+            result.MaxStudent = findLop.MaxStudent;
+            result.StudentDtoss = findStud.ToList();
+
+            return result;
+
+        }
+
+        public PageResultDtos<MonHoc> GetAllTeacherMonHoc([FromQuery] FilterDtos input, string teacherId)
+        {
+            var result = new PageResultDtos<MonHoc>();
+            var findMh = from mh in _context.MonHocs
+                            join tmh in _context.Teacher_MonHocs on mh.MaMonHoc equals tmh.MaMonHoc
+                            where tmh.TeacherId == teacherId
+                            select mh;
+            var query = findMh.Where(e =>
+                string.IsNullOrEmpty(input.KeyWord)
+                || e.TenMon.ToLower().Contains(input.KeyWord.ToLower())
+            );
+            result.TotalItem = query.Count();
+
+            query = query.OrderByDescending(e => e.TenMon).Skip(input.Skip()).Take(input.PageSize);
+
+            result.Items = query.ToList();
+
+            return result;
+        }
+        public PageResultDtos<TeacherDtos> GetTeacherById([FromQuery] FilterDtos input, List<string> teacherId)
+        {
+            var result = new PageResultDtos<TeacherDtos>();
+            var listTeacher = new List<TeacherDtos>();
+            foreach (var item in teacherId)
+            {
+                var findteacher = _context.Teachers.FirstOrDefault(t => t.TeacherId == item);
+                var teacher = new TeacherDtos
+                              {
+                                  TeacherId = findteacher.TeacherId,
+                                  TenGiangVien = findteacher.TenGiangVien,
+                                  Birthday = findteacher.Birthday,
+                                  BoMonId = findteacher.BoMonId,
+                                  Cccd = findteacher.Cccd,
+                                  Email = findteacher.Email,
+                                  GioiTinh = findteacher.GioiTinh,
+                                  QueQUan = findteacher.QueQuan,
+                                  Image = findteacher.Image
+                              };
+                listTeacher.Add(teacher);
+            }
+            var query = listTeacher.Where(e =>
+                        string.IsNullOrEmpty(input.KeyWord)
+                        || e.TenGiangVien.ToLower().Contains(input.KeyWord.ToLower())
+);
+            result.TotalItem = query.Count();
+
+            query = query
+                .OrderBy(e => e.TenGiangVien)
+                .ThenBy(e => e.BoMonId)
+                .Skip(input.Skip())
+                .Take(input.PageSize);
+
+            result.Items = query.ToList();
+            return result;
+        }
+    
     }
 }

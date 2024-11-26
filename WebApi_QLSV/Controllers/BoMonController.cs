@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApi_QLSV.Dtos.BoMonFd;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Services.Interfaces;
@@ -16,6 +17,7 @@ namespace WebApi_QLSV.Controllers
             _bomonService = bomonService;
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPost("/Add-bo-mon")]
         public IActionResult AddBoMon(AddBoMonDtos input)
         {
@@ -29,6 +31,7 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpGet("/Get-all-bo-mon")]
         public IActionResult GetAllBoMon([FromQuery] FilterDtos input2)
         {
@@ -41,6 +44,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpGet("/Get-all-bo-mon-theo-khoa")]
         public IActionResult GetAllBoMonTheoKhoa()
         {
@@ -53,6 +58,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpPut("/Update-bo-mon")]
         public IActionResult UpdateBoMon(UpdateBoMonDtos input)
         {
@@ -65,6 +72,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpDelete("/Delete-bo-mon")]
         public IActionResult DeleteBoMon([FromQuery] string BoMonId)
         {

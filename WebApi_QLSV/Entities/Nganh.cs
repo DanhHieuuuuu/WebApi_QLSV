@@ -15,14 +15,10 @@ namespace WebApi_QLSV.Entities
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public DateTime NgayThanhLap { get; set; }
+        public string? TruongNganh { get; set; }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string TruongNganh { get; set; }
+        public string? PhoNganh { get; set; }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
-        public string PhoNganh { get; set; }
-
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public string KhoaId { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]

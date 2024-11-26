@@ -12,11 +12,12 @@ namespace WebApi_QLSV.Services.Interfaces
         ResponseLoginStudentDtos LoginStudent(Login input);
         PageResultDtos<StudentDtos> GetAllStudent([FromQuery] FilterDtos input);
         //List<MonHocDtos> DiemMonHoc(string studentId, string nganhId);
-        List<AddBangDiemDtos> GetBangDiem(string studentId);
         PageResultDtos<StudentInClass> GetAllStudentInClass([FromQuery] FilterDtos input);
         Task<Student> AddStudent2(AddStudentDtos2 input);
         Task<StudentDtos> UpdateStudent([FromQuery] string studentId, [FromForm] UpdateStudentDtos input);
         void DeleteStudent(string studentId);
+        PageResultDtos<StudentDtos> GetAllAndFindStudentByName([FromQuery] FilterDtos input);
+        PageResultDtos<StudentDtos> GetAllStudentById([FromQuery] FilterDtos input, List<string> studentId);
         //PageResultDtos<StudentInClassDtos> GetAllStudentInLopHP([FromQuery] FilterDtos input, [FromQuery] string ClassName);
     }
 }

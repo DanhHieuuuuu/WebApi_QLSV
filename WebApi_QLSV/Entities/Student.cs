@@ -41,5 +41,6 @@ namespace WebApi_QLSV.Entities
         [Required(AllowEmptyStrings = false, ErrorMessage = "Không được bỏ trống")]
         public bool? GioiTinh { get; set; }
         public string? Image { get; set; }
+        public string Role { get; set; } = "Student";
     }
 }

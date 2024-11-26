@@ -29,6 +29,7 @@ namespace WebApi_QLSV.Services.Implements
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, "Student")
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtsettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -216,7 +217,8 @@ namespace WebApi_QLSV.Services.Implements
                     Token = token,
                     Birthday = student.Birthday,
                     QueQuan = student.QueQuan,
-                    TenLopQL = student.LopQLId,
+                    LopQLId = student.LopQLId,
+                    TenLopQL = findNganh.TenLopQL,
                     Cccd = student.Cccd,
                     GioiTinh = student.GioiTinh,
                     StudentId = student.StudentId,
@@ -250,8 +252,8 @@ namespace WebApi_QLSV.Services.Implements
             string Email = name + IdStudent + "@huce.edu.vn";
             string Password = name + IdStudent;
             var findLopQL =
-                _context.LopQLs.FirstOrDefault(n => n.LopQLId == input.TenLopQL.ToUpper())
-                ?? throw new UserExceptions($"Không tồn tại lớp {input.TenLopQL.ToUpper()}");
+                _context.LopQLs.FirstOrDefault(n => n.LopQLId == input.LopQLId.ToUpper())
+                ?? throw new UserExceptions($"Không tồn tại lớp {input.LopQLId.ToUpper()}");
             findLopQL.MaxStudent = findLopQL.MaxStudent + 1;
             var findCccd = _context.Students.FirstOrDefault(c => c.Cccd == input.Cccd);
             if (findCccd != null)
@@ -266,7 +268,7 @@ namespace WebApi_QLSV.Services.Implements
                 Password = BCrypt.Net.BCrypt.HashPassword(Password),
                 Birthday = input.Birthday,
                 QueQuan = input.QueQuan,
-                LopQLId = input.TenLopQL.ToUpper(),
+                LopQLId = input.LopQLId.ToUpper(),
                 Cccd = input.Cccd,
                 GioiTinh = input.GioiTinh,
             };
@@ -298,13 +300,15 @@ namespace WebApi_QLSV.Services.Implements
             var result = new PageResultDtos<StudentDtos>();
             var allStudent =
                 from stu in _context.Students
+                join cls in _context.LopQLs on stu.LopQLId equals cls.LopQLId
                 select new StudentDtos
                 {
                     StudentId = stu.StudentId,
                     Username = stu.Username,
                     Cccd = stu.Cccd,
                     Email = stu.Email,
-                    TenLopQL = stu.LopQLId,
+                    LopQLId = cls.LopQLId,
+                    TenLopQL = cls.TenLopQL,
                     GioiTinh = stu.GioiTinh,
                     Birthday = stu.Birthday,
                     QueQuan = stu.QueQuan,
@@ -313,7 +317,7 @@ namespace WebApi_QLSV.Services.Implements
                 };
             var query = allStudent.Where(e =>
                 string.IsNullOrEmpty(input.KeyWord)
-                || e.Username.ToLower().Contains(input.KeyWord.ToLower())
+                || e.LopQLId.ToLower().Contains(input.KeyWord.ToLower())
             );
             result.TotalItem = query.Count();
             query = query
@@ -330,43 +334,106 @@ namespace WebApi_QLSV.Services.Implements
         public PageResultDtos<StudentInClass> GetAllStudentInClass([FromQuery] FilterDtos input)
         {
             var result = new PageResultDtos<StudentInClass>();
-            var group = _context
-                .Students.GroupBy(l => l.LopQLId)
-                .Select(l => new { lopQL = l.Key, student = l.OrderBy(e => e.Username).ToList() });
+            var group2 = from s in _context.Students
+                         join l in _context.LopQLs on s.LopQLId equals l.LopQLId
+                         select new
+                         {
+                             l.LopQLId,
+                             l.TenLopQL,
+                             s.StudentId,
+                             s.Username,
+                             s.Email,
+                             s.Cccd,
+                             s.QueQuan,
+                             s.Image,
+                             s.GioiTinh,
+                             s.NienKhoa,
+                             s.Birthday,
+                         };
+            var group1 = group2.GroupBy(e => e.LopQLId).Select
+                         (g => new
+                         {
+                             lopqlId = g.Key,
+                             student = g.OrderBy(s => s.Username).Select(item2 => new StudentDtos
+                             {
+                                 StudentId = item2.StudentId,
+                                 Username = item2.Username,
+                                 LopQLId = item2.LopQLId,
+                                 TenLopQL = item2.TenLopQL,
+                                 Email = item2.Email,
+                                 Cccd = item2.Cccd,
+                                 QueQuan = item2.QueQuan,
+                                 Image = item2.Image,
+                                 GioiTinh = item2.GioiTinh,
+                                 NienKhoa = item2.NienKhoa,
+                                 Birthday = item2.Birthday,
+                             }),
+                         }
+                        ).ToList();
+
+            var group = from l in _context.LopQLs
+                        select new
+                        {
+                            l.LopQLId,
+                            l.TenLopQL
+                        };
             var liststudent = new List<StudentInClass>();
             foreach (var item in group)
             {
                 var newStudent = new StudentInClass();
-                newStudent.Class = item.lopQL;
-                foreach (var item1 in item.student)
+                newStudent.LopQLId = item.LopQLId;
+                newStudent.TenLopQL = item.TenLopQL;
+                foreach (var item1 in group1)
                 {
-                    var stud = new StudentDtos
+                    if(item1.lopqlId == item.LopQLId)
                     {
-                        StudentId = item1.StudentId,
-                        Username = item1.Username,
-                        TenLopQL = item1.LopQLId,
-                        Email = item1.Email,
-                        Cccd = item1.Cccd,
-                        QueQuan = item1.QueQuan,
-                        Image = item1.Image,
-                        GioiTinh = item1.GioiTinh,
-                        NienKhoa = item1.NienKhoa,
-                        Birthday = item1.Birthday,
-                    };
-                    if (item1.LopQLId == item.lopQL)
-                    {
-                        newStudent.StudentDtoss.Add(stud);
+                       newStudent.StudentDtoss = item1.student.ToList();
                     }
                 }
                 liststudent.Add(newStudent);
-                Console.WriteLine(liststudent[0].Class);
             }
             var query = liststudent.Where(e =>
                 string.IsNullOrEmpty(input.KeyWord)
-                || e.Class.ToLower().Contains(input.KeyWord.ToLower())
+                || e.TenLopQL.ToLower().Contains(input.KeyWord.ToLower())
             );
             result.TotalItem = query.Count();
-            query = query.OrderBy(e => e.Class).Skip(input.Skip()).Take(input.PageSize);
+            query = query.OrderBy(e => e.StudentDtoss.Count).OrderBy(e => e.TenLopQL).Skip(input.Skip()).Take(input.PageSize);
+
+            result.Items = query.ToList();
+
+            return result;
+        }
+
+        public PageResultDtos<StudentDtos> GetAllAndFindStudentByName([FromQuery] FilterDtos input)
+        {
+            var result = new PageResultDtos<StudentDtos>();
+            var allStudent =
+                from stu in _context.Students
+                join cls in _context.LopQLs on stu.LopQLId equals cls.LopQLId
+                select new StudentDtos
+                {
+                    StudentId = stu.StudentId,
+                    Username = stu.Username,
+                    Cccd = stu.Cccd,
+                    Email = stu.Email,
+                    LopQLId = cls.LopQLId,
+                    TenLopQL = cls.TenLopQL,
+                    GioiTinh = stu.GioiTinh,
+                    Birthday = stu.Birthday,
+                    QueQuan = stu.QueQuan,
+                    NienKhoa = stu.NienKhoa,
+                    Image = stu.Image,
+                };
+            var query = allStudent.Where(e =>
+                string.IsNullOrEmpty(input.KeyWord)
+                || e.Username.ToLower().Contains(input.KeyWord.ToLower())
+            );
+            result.TotalItem = query.Count();
+            query = query
+                .OrderByDescending(e => e.Username)
+                .ThenByDescending(e => e.StudentId)
+                .Skip(input.Skip())
+                .Take(input.PageSize);
 
             result.Items = query.ToList();
 
@@ -400,182 +467,6 @@ namespace WebApi_QLSV.Services.Implements
         //    return monhoc.ToList();
         //}
 
-        public static string DiemChu(double? diem)
-        {
-            if (diem >= 8.5)
-            {
-                return "A";
-            }
-            else if (diem >= 8)
-            {
-                return "B+";
-            }
-            else if (diem >= 7)
-            {
-                return "B";
-            }
-            else if (diem >= 6.5)
-            {
-                return "C+";
-            }
-            else if (diem >= 5.5)
-            {
-                return "C";
-            }
-            else if (diem >= 5)
-            {
-                return "D+";
-            }
-            else if (diem >= 4)
-            {
-                return "D";
-            }
-            else if (diem < 4)
-            {
-                return "F";
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public static double DiemThang4(double? diem)
-        {
-            if (diem >= 8.5)
-            {
-                return 4;
-            }
-            else if (diem >= 8)
-            {
-                return 3.5;
-            }
-            else if (diem >= 7)
-            {
-                return 3;
-            }
-            else if (diem >= 6.5)
-            {
-                return 2.5;
-            }
-            else if (diem >= 5.5)
-            {
-                return 2;
-            }
-            else if (diem >= 5)
-            {
-                return 1.5;
-            }
-            else if (diem >= 4)
-            {
-                return 1;
-            }
-            else if (diem < 4)
-            {
-                return 0;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
-        public List<AddBangDiemDtos> GetBangDiem([FromQuery] string studentId)
-        {
-            var lopHP =
-                from cls in _context.ClassStudents
-                join lhp in _context.LopHPs on cls.LopHPId equals lhp.LopHPId
-                join mh in _context.MonHocs on lhp.MonId equals mh.MaMonHoc
-                where cls.StudentId == studentId
-                select new BangDiemDtos
-                {
-                    KiHocNamHoc = lhp.KiHocNamHoc,
-                    monId = lhp.MonId,
-                    tenMon = mh.TenMon,
-                    LopHPId = lhp.LopHPId,
-                    LopHP = lhp.TenLopHP,
-                    sotin = mh.SoTin,
-                    DiemQT = cls.DiemMH,
-                    DiemKT = cls.DiemKT,
-                    DiemMH = cls.DiemMH,
-                    DiemChu = DiemChu(cls.DiemMH),
-                    DiemThang4 = DiemThang4(cls.DiemMH),
-                    TienMonHoc = cls.TienMonHoc,
-                    Nop = cls.Nop,
-                };
-            var group = lopHP
-                .GroupBy(g => g.KiHocNamHoc)
-                .Select(g => new
-                {
-                    KiHocNamHoc = g.Key,
-                    BangDiem = g.OrderBy(o => o.tenMon).ToList(),
-                })
-                .ToList();
-            List<AddBangDiemDtos> abd = new List<AddBangDiemDtos>();
-            double? diemTB10 = 0;
-            double? diemTichLuy10 = 0;
-            int? tongTCKi = 0;
-            int? tongTCTichLuy = 0;
-            int? tongTCDat = 0;
-            int? tienHocKi = 0;
-            int? soTienNop = 0;
-            int? congNo = 0;
-            foreach (var item in group)
-            {
-                foreach (var item1 in item.BangDiem)
-                {
-                    double? diemMH = 0;
-                    if (item1.DiemMH != null && item1.DiemMH >= 4)
-                    {
-                        diemMH = item1.DiemMH;
-                        tongTCDat += item1.sotin;
-                    }
-                    else if (item1.DiemMH != null && item1.DiemMH < 4)
-                    {
-                        diemMH = item1.DiemMH;
-                    }
-                    else
-                    {
-                        diemMH = 0;
-                    }
-                    if (item1.Nop)
-                    {
-                        soTienNop += item1.TienMonHoc;
-                    }
-                    else
-                    {
-                        congNo += item1.TienMonHoc;
-                    }
-                    diemTB10 = diemTB10 + diemMH * item1.sotin;
-                    diemTichLuy10 += diemMH * item1.sotin;
-                    tongTCKi = tongTCKi + item1.sotin;
-                    tienHocKi += item1.TienMonHoc;
-                }
-                tongTCTichLuy = tongTCTichLuy + tongTCKi;
-
-                AddBangDiemDtos bd = new AddBangDiemDtos(
-                    item.KiHocNamHoc,
-                    diemTB10 / tongTCKi,
-                    DiemThang4(diemTB10 / tongTCKi),
-                    diemTichLuy10 / tongTCTichLuy,
-                    DiemThang4(diemTichLuy10 / tongTCTichLuy),
-                    tongTCKi,
-                    tongTCTichLuy,
-                    tongTCDat,
-                    tienHocKi,
-                    soTienNop,
-                    congNo
-                );
-                soTienNop = 0;
-                congNo = 0;
-                tienHocKi = 0;
-                diemTB10 = 0;
-                tongTCKi = 0;
-                bd.BangDiems = item.BangDiem;
-                abd.Add(bd);
-            }
-            return abd;
-        }
 
         public async Task<StudentDtos> UpdateStudent(
             [FromQuery] string studentId,
@@ -588,9 +479,9 @@ namespace WebApi_QLSV.Services.Implements
             var checkCccd = _context.Students.Count(s => s.Cccd == input.Cccd);
             if (
                 input.Username == null
-                || input.Email == null
                 || input.QueQuan == null
                 || input.Cccd == null
+                || input.LopQLId == null
                 || input.GioiTinh == null
             )
             {
@@ -600,43 +491,58 @@ namespace WebApi_QLSV.Services.Implements
             {
                 throw new UserExceptions("Đã tồn tại Căn cước công dân");
             }
+            var findLopQL = _context.LopQLs.SingleOrDefault(s => s.LopQLId == findStu.LopQLId);
+            findLopQL.MaxStudent = findLopQL.MaxStudent - 1;
+
+            var findNewLopQl = _context.LopQLs.FirstOrDefault(s => s.LopQLId == input.LopQLId);
+            findNewLopQl.MaxStudent = findNewLopQl.MaxStudent + 1;
 
             findStu.Username = input.Username;
-            findStu.Email = input.Email;
             findStu.Birthday = input.Birthday;
             findStu.QueQuan = input.QueQuan;
             findStu.Cccd = input.Cccd;
+            findStu.LopQLId = input.LopQLId;
             findStu.GioiTinh = input.GioiTinh;
-            if (input.Image.Length > 0)
+            if( input.Image == null)
             {
-                var path = Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "wwwroot",
-                    "Images",
-                    input.Image.FileName
-                );
-                using (var stream = System.IO.File.Create(path))
-                {
-                    await input.Image.CopyToAsync(stream);
-                }
-                findStu.Image = "/images/" + input.Image.FileName;
+                findStu.Image = findStu.Image;
             }
             else
             {
-                throw new UserExceptions("Không có file");
+                if (input.Image.Length > 0)
+                {
+                    var path = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        "Images",
+                        input.Image.FileName
+                    );
+                    using (var stream = System.IO.File.Create(path))
+                    {
+                        await input.Image.CopyToAsync(stream);
+                    }
+                    findStu.Image = "/images/" + input.Image.FileName;
+                }
+                else
+                {
+                    throw new UserExceptions("Không có file");
+                }
             }
             _context.Students.Update(findStu);
+            _context.LopQLs.Update(findLopQL);
+            _context.LopQLs.Update(findNewLopQl);
             _context.SaveChanges();
             var newStudent = new StudentDtos
             {
                 StudentId = findStu.StudentId,
                 Username = input.Username,
-                Email = input.Email,
+                Email = findStu.Email,
                 Birthday = input.Birthday,
                 QueQuan = input.QueQuan,
                 Cccd = input.Cccd,
                 GioiTinh = input.GioiTinh,
-                TenLopQL = findStu.LopQLId,
+                LopQLId = findLopQL.LopQLId,
+                TenLopQL = findLopQL.TenLopQL,
                 Image = findStu.Image,
                 NienKhoa = findStu.NienKhoa,
             };
@@ -657,6 +563,43 @@ namespace WebApi_QLSV.Services.Implements
             {
                 throw new UserExceptions("Không tồn tại sinh viên");
             }
+        }
+
+        public PageResultDtos<StudentDtos> GetAllStudentById([FromQuery] FilterDtos input, List<string> studentId)
+        {
+            var result = new PageResultDtos<StudentDtos>();
+
+            var listStudent = new List<StudentDtos>();
+            foreach (var item in studentId)
+            {
+                var stu = _context.Students.FirstOrDefault( s => s.StudentId == item);
+                var cls = _context.LopQLs.FirstOrDefault(l => l.LopQLId == stu.LopQLId);
+                var student = new StudentDtos
+                {
+                    StudentId = stu.StudentId,
+                    Username = stu.Username,
+                    Cccd = stu.Cccd,
+                    Email = stu.Email,
+                    LopQLId = cls.LopQLId,
+                    TenLopQL = cls.TenLopQL,
+                    GioiTinh = stu.GioiTinh,
+                    Birthday = stu.Birthday,
+                    QueQuan = stu.QueQuan,
+                    NienKhoa = stu.NienKhoa,
+                    Image = stu.Image,
+                };
+                listStudent.Add(student);
+            }
+            var query = listStudent.Where(e =>
+                        string.IsNullOrEmpty(input.KeyWord)
+                        || e.Username.ToLower().Contains(input.KeyWord.ToLower())
+);
+            result.TotalItem = query.Count();
+            query = query.OrderBy(e => e.Username).OrderBy(e => e.TenLopQL).Skip(input.Skip()).Take(input.PageSize);
+
+            result.Items = query.ToList();
+
+            return result;
         }
     }
 }

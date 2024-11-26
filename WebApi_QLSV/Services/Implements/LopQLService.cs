@@ -3,6 +3,7 @@ using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Dtos.ClassFd;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.Student;
+using WebApi_QLSV.Entities;
 using WebApi_QLSV.Entities.ClassFd;
 using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
@@ -20,6 +21,8 @@ namespace WebApi_QLSV.Services.Implements
 
         public LopQL AddLopQL(AddLopQLDtos input)
         {
+            var findLop = _context.LopQLs.Any(e => e.LopQLId == input.LopQLId);
+            if (findLop) { throw new UserExceptions("Đã tồn tại mã lơp quả lí"); };
             var findNganh =
                 _context.Nganhs.FirstOrDefault(n => n.NganhId == input.NganhId.ToUpper())
                 ?? throw new UserExceptions("Không tồn tại nghành này");
@@ -28,11 +31,15 @@ namespace WebApi_QLSV.Services.Implements
             if (findTeacher == null)
             {
                 throw new UserExceptions("Không tồn tại mã chủ nhiệm");
-            }
-            ;
+            };
+            var findCN = _context.LopQLs.Any(n => n.TeacherId == input.TeacherId);
+            if (findCN) { throw new UserExceptions("Đã là chủ nhiệm"); };
+
+
             var result = new LopQL
             {
-                LopQLId = input.TenLopQL.ToUpper(),
+                LopQLId = input.LopQLId.ToUpper(),
+                TenLopQL = input.TenLopQL.ToUpper(),
                 TeacherId = input.TeacherId,
                 MaxStudent = 0,
                 NganhId = input.NganhId.ToUpper(),
@@ -87,23 +94,59 @@ namespace WebApi_QLSV.Services.Implements
         public PageResultDtos<LopQLTheoNganhDtos> getAllLopQLTheoNganh([FromQuery] FilterDtos input)
         {
             var result = new PageResultDtos<LopQLTheoNganhDtos>();
-            var group = _context
-                .LopQLs.GroupBy(l => l.NganhId)
-                .Select(l => new { nganh = l.Key, lopQL = l.OrderBy(e => e.LopQLId).ToList() });
+            var findNganh = from n in _context.Nganhs
+                            join l in _context.LopQLs on n.NganhId equals l.NganhId
+                            select new
+                            {
+                                l.LopQLId,
+                                l.TenLopQL,
+                                l.NganhId,
+                                n.TenNganh,
+                                l.MaxStudent,
+                                l.LopTruongId,
+                                l.LopPhoId,
+                                l.TeacherId,
+
+                            };
+            var group = findNganh.GroupBy(l => l.NganhId)
+                .Select(l => new { nganhId = l.Key, lopQL = l.OrderBy(e => e.TenLopQL).Select(item1 => new LopQL
+                {
+                    LopQLId = item1.LopQLId,
+                    TenLopQL = item1.TenLopQL,
+                    NganhId = item1.NganhId,
+                    LopPhoId = item1.LopPhoId,
+                    LopTruongId = item1.LopTruongId,
+                    MaxStudent = item1.MaxStudent,
+                    TeacherId = item1.TeacherId,
+                }).ToList() 
+                }).ToList();
+            var group2 = from n in _context.Nganhs
+                         select new
+                         {
+                             n.NganhId,
+                             n.TenNganh
+                         };
             var listLopQL = new List<LopQLTheoNganhDtos>();
-            foreach (var item in group)
+            foreach (var item in group2)
             {
                 var newLopQL = new LopQLTheoNganhDtos();
-                newLopQL.Nganhs = item.nganh;
-                newLopQL.lopQLs = item.lopQL;
+                newLopQL.NganhId = item.NganhId;
+                newLopQL.TenNganh = item.TenNganh;
+                foreach (var item1 in group)
+                {
+                    if(item1.nganhId == item.NganhId)
+                    {
+                        newLopQL.lopQLs = item1.lopQL;
+                    }
+                }
                 listLopQL.Add(newLopQL);
             }
             var query = listLopQL.Where(e =>
                 string.IsNullOrEmpty(input.KeyWord)
-                || e.Nganhs.ToLower().Contains(input.KeyWord.ToLower())
+                || e.TenNganh.ToLower().Contains(input.KeyWord.ToLower())
             );
             result.TotalItem = query.Count();
-            query = query.OrderBy(e => e.Nganhs).Skip(input.Skip()).Take(input.PageSize);
+            query = query.OrderBy(e => e.lopQLs.Count).OrderByDescending(e => e.TenNganh).Skip(input.Skip()).Take(input.PageSize);
 
             result.Items = query.ToList();
 
@@ -114,6 +157,20 @@ namespace WebApi_QLSV.Services.Implements
             var findLopQl = _context.LopQLs.FirstOrDefault(l => l.LopQLId == input.LopQLId);
             var findNganh = _context.Nganhs.FirstOrDefault(l => l.NganhId == input.NganhId)
                 ?? throw new UserExceptions("Không tồn tại ngành");
+            findLopQl.TenLopQL = input.TenLopQL;
+            
+            var AnyStudent = _context.Students.Any(s => s.LopQLId == input.LopQLId && s.StudentId == input.LopTruongId);
+            if( !AnyStudent ) throw new UserExceptions($"Không tồn tại mã lớp trưởng: {input.LopTruongId}");
+            
+            var AnyStudent2 = _context.Students.Any(s => s.LopQLId == input.LopQLId && s.StudentId == input.LopPhoId);
+            if (!AnyStudent2) throw new UserExceptions($"Không tồn tại mã lớp phó: {input.LopPhoId}");
+
+            var AnyTeacher = _context.Teachers.Any(s => s.TeacherId == input.TeacherId);
+            if (!AnyTeacher) throw new UserExceptions($"Không tồn tại mã giảng viên: {input.TeacherId}");
+
+            var AnyCN = _context.LopQLs.Any(l => l.TeacherId == input.TeacherId);
+            if (!AnyCN) throw new UserExceptions("Giảng viên này đã là chủ nhiệm");
+
             findLopQl.LopPhoId = input.LopPhoId;
             findLopQl.LopTruongId = input.LopTruongId;
             findLopQl.TeacherId = input.TeacherId;
@@ -133,6 +190,9 @@ namespace WebApi_QLSV.Services.Implements
             else
             {
                 var findStudent = _context.Students.Where(s => s.LopQLId == LopQLId).ToList();
+                var findNganh = _context.Nganhs.FirstOrDefault(s => s.NganhId == findLopQL.NganhId);
+                findNganh.SumClass = findNganh.SumClass - 1;
+                _context.Nganhs.Update(findNganh);
                 _context.Students.RemoveRange(findStudent);
             }
             _context.LopQLs.Remove(findLopQL);

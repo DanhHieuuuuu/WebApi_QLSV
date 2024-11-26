@@ -33,8 +33,8 @@ namespace WebApi_QLSV.Services.Implements
                 NganhId = input.NganhId.ToUpper(),
                 TenNganh = input.TenNganh,
                 NgayThanhLap = input.NgayThanhLap,
-                TruongNganh = input.TruongNganh,
-                PhoNganh = input.PhoNganh,
+                TruongNganh = input.TruongNganhId,
+                PhoNganh = input.PhoNganhId,
                 KhoaId = input.KhoaId.ToUpper(),
                 SumClass = 0,
             };
@@ -65,7 +65,21 @@ namespace WebApi_QLSV.Services.Implements
         }
         public List<NganhTheoKhoaDots> GetNganhTheoKhoa()
         {
-            var group = _context.Nganhs.GroupBy(e => e.KhoaId).Select(
+            var findNganhs = from k in _context.Khoas
+                             join n in _context.Nganhs on k.KhoaId equals n.KhoaId
+                             select new
+                             {
+                                 n.NganhId,
+                                 n.TenNganh,
+                                 n.NgayThanhLap,
+                                 n.TruongNganh,
+                                 n.PhoNganh,
+                                 n.KhoaId,
+                                 k.TenKhoa,
+                                 n.SumClass,
+
+                             };
+            var group = findNganhs.GroupBy(e => e.KhoaId).Select(
                 g => new
                 {
                     khoaId = g.Key,
@@ -75,15 +89,27 @@ namespace WebApi_QLSV.Services.Implements
             var listNganh = new List<NganhTheoKhoaDots>();
             foreach (var item in group)
             {
-
-                var newNganh = new NganhTheoKhoaDots
+                var newNganh = new NganhTheoKhoaDots();
+                newNganh.KhoaId = item.khoaId;
+                foreach (var item1 in item.nganh)
                 {
-                    KhoaId = item.khoaId,
-                    Nganhs = item.nganh,
-
-                };
+                    var nganh2 = new Nganh
+                    {
+                        NganhId = item1.NganhId,
+                        TenNganh = item1.TenNganh,
+                        NgayThanhLap = item1.NgayThanhLap,
+                        TruongNganh = item1.TruongNganh,
+                        PhoNganh = item1.PhoNganh,
+                        KhoaId = item1.KhoaId,
+                        SumClass = item1.SumClass,
+                    };
+                    if (item1.KhoaId == item.khoaId)
+                    {
+                        newNganh.Nganhs.Add(nganh2);
+                        newNganh.TenKhoa = item1.TenKhoa;
+                    }
+                }
                 listNganh.Add(newNganh);
-                
             }
             return listNganh;
         }
@@ -93,9 +119,10 @@ namespace WebApi_QLSV.Services.Implements
                 ?? throw new UserExceptions("Không tìm thấy ngành");
             var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId)
                 ?? throw new UserExceptions("Không tìm thấy khoa");
+                        var findTea = _context.Teachers.Any(k => k.TeacherId == input.TruongNganhId);
             findNganh.TenNganh = input.TenNganh;
-            findNganh.TruongNganh = input.TruongNganh;
-            findNganh.PhoNganh = input.PhoNganh;
+            findNganh.TruongNganh = input.TruongNganhId;
+            findNganh.PhoNganh = input.PhoNganhId;
             findNganh.NgayThanhLap = input.NgayThanhLap;
             findNganh.KhoaId = input.KhoaId;
             _context.Nganhs.Update(findNganh);

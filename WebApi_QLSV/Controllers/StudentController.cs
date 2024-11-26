@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Dtos;
@@ -22,6 +23,8 @@ namespace WebApi_QLSV.Controllers
             _context = context;
         }
 
+
+        [Authorize(Roles = "Manager")]
         [HttpPost("/Add-student")]
         public async Task<IActionResult> AddStudent2([FromForm] AddStudentDtos2 input3)
         {
@@ -49,6 +52,7 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("/Update-image-student")]
         public async Task<IActionResult> UpdateImageStudent([FromForm] AddImageDtos input3)
         {
@@ -97,7 +101,19 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[Authorize]
+
+        [HttpGet("/Get-all-student-and-find-by-name")]
+        public IActionResult GetAllStudentAndFindByNames([FromQuery] FilterDtos input2)
+        {
+            try
+            {
+                return Ok(_studentServices.GetAllAndFindStudentByName(input2));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpGet("/Get-all-student-3")]
         public IActionResult GetAllStudentInClass([FromQuery] FilterDtos input3)
@@ -105,6 +121,19 @@ namespace WebApi_QLSV.Controllers
             try
             {
                 return Ok(_studentServices.GetAllStudentInClass(input3));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/get-student-by-id")]
+        public IActionResult GetAllStudentById([FromQuery] FilterDtos input,[FromQuery] List<string> studentId)
+        {
+            try
+            {
+                return Ok(_studentServices.GetAllStudentById(input, studentId));
             }
             catch (Exception ex)
             {
@@ -136,6 +165,8 @@ namespace WebApi_QLSV.Controllers
         //        return BadRequest(ex.Message);
         //    }
         //}
+
+        [Authorize]
         [HttpPut("/Update-student")]
         public async Task<IActionResult> UpdateStudent([FromQuery] string studentId ,[FromForm] UpdateStudentDtos input)
         {
@@ -149,6 +180,8 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = "Manager")]
         [HttpDelete("/Delete-student")]
         public IActionResult DeleteStudent([FromQuery] string studentId)
         {

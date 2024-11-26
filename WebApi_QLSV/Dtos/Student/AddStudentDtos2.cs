@@ -6,7 +6,7 @@
 
         public DateTime Birthday { get; set; } = DateTime.Now;
 
-        public string TenLopQL { get; set; }
+        public string LopQLId { get; set; }
 
         public string? QueQuan { get; set; }
 
