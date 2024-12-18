@@ -45,7 +45,7 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        //[Authorize(Roles = "Manager")]
         [HttpGet("/Get-all-khoa-chi-tiet")]
         public IActionResult GetAllKhoaDetail([FromQuery] FilterDtos input3)
         {

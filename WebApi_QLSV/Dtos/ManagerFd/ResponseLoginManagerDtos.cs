@@ -11,5 +11,6 @@
         public string QueQuan { get; set; }
         public string UrlImage { get; set; }
         public string Token { get; set; }
+        public string Role { get; set; }
     }
 }

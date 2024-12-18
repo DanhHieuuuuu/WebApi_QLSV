@@ -12,6 +12,8 @@ namespace WebApi_QLSV.Services.Interfaces
         void DeleteMonHoc(string MaMonHoc);
         PageResultDtos<MonHoc> GetAllMonHoc([FromQuery] FilterDtos input);
         PageResultDtos<MonHocTrongBoMonDtos> GetAllMonTrongBoMon([FromQuery] FilterDtos input);
+        PageResultDtos<MonHocDetailDto> GetMonHocById([FromQuery] FilterDtos input);
+        PageResultDtos<MonHoc> GetMonHocById2([FromQuery] FilterDtos input, List<string> maMonHocs);
         PageResultDtos<MonHocDetailDto> GetMonHocDetail([FromQuery] FilterDtos input);
         PageResultDtos<TeacherDtos> GetTeacherPhuTrach([FromQuery] string maMonHoc, FilterDtos input);
         MonHoc UpdateMonHoc(UpdateMonHoc input);

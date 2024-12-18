@@ -18,6 +18,8 @@ namespace WebApi_QLSV.Services.Interfaces
         void DeleteStudent(string studentId);
         PageResultDtos<StudentDtos> GetAllAndFindStudentByName([FromQuery] FilterDtos input);
         PageResultDtos<StudentDtos> GetAllStudentById([FromQuery] FilterDtos input, List<string> studentId);
+        object Login(Login input);
+        void ChangePassword(string email, string Password, string role);
         //PageResultDtos<StudentInClassDtos> GetAllStudentInLopHP([FromQuery] FilterDtos input, [FromQuery] string ClassName);
     }
 }

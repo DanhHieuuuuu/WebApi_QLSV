@@ -24,7 +24,7 @@ namespace WebApi_QLSV.Controllers
         }
 
 
-        [Authorize(Roles = "Manager")]
+        //[Authorize(Roles = "Manager")]
         [HttpPost("/Add-student")]
         public async Task<IActionResult> AddStudent2([FromForm] AddStudentDtos2 input3)
         {
@@ -52,36 +52,39 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize]
-        [HttpPut("/Update-image-student")]
-        public async Task<IActionResult> UpdateImageStudent([FromForm] AddImageDtos input3)
+        [HttpPost("/login")]
+        public IActionResult Login(Login input1)
         {
             try
             {
-                var findStudent =
-                    _context.Students.FirstOrDefault(s => s.StudentId == input3.Id)
-                    ?? throw new UserExceptions("Không tìm thấy sinh viên");
-                if (input3.Image.Length > 0)
-                {
-                    var path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot",
-                        "Images",
-                        input3.Image.FileName
-                    );
-                    using (var stream = System.IO.File.Create(path))
-                    {
-                        await input3.Image.CopyToAsync(stream);
-                    }
-                    findStudent.Image = "/images/" + input3.Image.FileName;
-                }
-                else
-                {
-                    throw new UserExceptions("Không có file");
-                }
-                _context.Students.Update(findStudent);
-                _context.SaveChanges();
-                return Ok(findStudent);
+                return Ok(_studentServices.Login(input1));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("/change-password")]
+        public IActionResult ChangePassword([FromBody] Login input2, string role)
+        {
+            try
+            {
+                _studentServices.ChangePassword(input2.Email, input2.Password, role);
+                return Ok("Thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("/get-student-by-id")]
+        public IActionResult GetAllStudentById([FromQuery] FilterDtos input, List<string> studentId)
+        {
+            try
+            {
+                return Ok(_studentServices.GetAllStudentById(input, studentId));
             }
             catch (Exception ex)
             {
@@ -128,19 +131,6 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [HttpGet("/get-student-by-id")]
-        public IActionResult GetAllStudentById([FromQuery] FilterDtos input,[FromQuery] List<string> studentId)
-        {
-            try
-            {
-                return Ok(_studentServices.GetAllStudentById(input, studentId));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         //[HttpGet("/Get-diem-mon-hoc")]
         //public IActionResult GetDiemMonHoc(string studentId, string nganhId)
         //{
@@ -176,6 +166,43 @@ namespace WebApi_QLSV.Controllers
                 return Ok(updateStu);
             }
             catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpPut("/Update-image-student")]
+        public async Task<IActionResult> UpdateImageStudent([FromForm] AddImageDtos input3)
+        {
+            try
+            {
+                var findStudent =
+                    _context.Students.FirstOrDefault(s => s.StudentId == input3.Id)
+                    ?? throw new UserExceptions("Không tìm thấy sinh viên");
+                if (input3.Image.Length > 0)
+                {
+                    var path = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        "Images",
+                        input3.Image.FileName
+                    );
+                    using (var stream = System.IO.File.Create(path))
+                    {
+                        await input3.Image.CopyToAsync(stream);
+                    }
+                    findStudent.Image = "/images/" + input3.Image.FileName;
+                }
+                else
+                {
+                    throw new UserExceptions("Không có file");
+                }
+                _context.Students.Update(findStudent);
+                _context.SaveChanges();
+                return Ok(findStudent);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

@@ -31,6 +31,19 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
+        [HttpPost("/get-mon-hoc-by-Id-2")]
+        public IActionResult GetMonHocById2([FromQuery] FilterDtos input, [FromBody] List<string> maMonHocs)
+        {
+            try
+            {
+                return Ok(_monHocService.GetMonHocById2(input, maMonHocs));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("/Get-all-mon-hoc")]
         public IActionResult GetMonHoc([FromQuery] FilterDtos input3)
         {
@@ -67,6 +80,19 @@ namespace WebApi_QLSV.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("/Get-mon-hoc-by-Id")]
+        public IActionResult GetMonHocById([FromQuery] FilterDtos input5)
+        {
+            try
+            {
+                return Ok(_monHocService.GetMonHocById(input5));
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
             }
         }
 

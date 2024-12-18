@@ -10,7 +10,7 @@ namespace WebApi_QLSV.Services.Interfaces
         BoMon AddBoMon(AddBoMonDtos input);
         void DeleteBoMon(string BoMonId);
         PageResultDtos<BoMon> GetAllBoMon([FromQuery] FilterDtos input);
-        List<BoMonTheoKhoaDtos> GetBoMonTheoKhoa();
+        List<BoMon> GetBoMonTheoKhoa([FromQuery] string boMonId);
         BoMon UpdateBoMon(UpdateBoMonDtos input);
     }
 }

@@ -11,7 +11,6 @@ using WebApi_QLSV.Dtos.Teacher;
 using WebApi_QLSV.Entities;
 using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebApi_QLSV.Services.Implements
 {
@@ -49,7 +48,7 @@ namespace WebApi_QLSV.Services.Implements
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string RemoveDiacritics(string text)
+        private static string RemoveDiacritics(string text)
         {
             string[] accentedChars = new string[]
             {
@@ -223,11 +222,11 @@ namespace WebApi_QLSV.Services.Implements
             // Lấy tên (phần cuối cùng của họ tên)
             string firstName = name[name.Length - 1]; // "Hiếu"
 
-            // Chuyển tên sang dạng không dấu
-            string normalizedFirstName = RemoveDiacritics(firstName).ToLower(); // "hieu"
-
             // Kết hợp tên không dấu và họ viết tắt
-            string username = normalizedFirstName + lastNameAbbreviation;
+            string username = firstName + lastNameAbbreviation;
+
+            // Chuyển tên sang dạng không dấu
+            username = RemoveDiacritics(username).ToLower();
 
             string Email = username + IdTeacher + "@huce.edu.vn";
             string Password = username + IdTeacher;
@@ -460,7 +459,7 @@ namespace WebApi_QLSV.Services.Implements
             }
             var query = listTeacher.Where(e =>
                 string.IsNullOrEmpty(input.KeyWord)
-                || e.BoMon.ToLower().Contains(input.KeyWord.ToLower())
+                || e.TenBoMon.ToLower().Contains(input.KeyWord.ToLower())
             );
             result.TotalItem = query.Count();
 
@@ -667,7 +666,8 @@ namespace WebApi_QLSV.Services.Implements
             var listTeacher = new List<TeacherDtos>();
             foreach (var item in teacherId)
             {
-                var findteacher = _context.Teachers.FirstOrDefault(t => t.TeacherId == item);
+                var findteacher = _context.Teachers.FirstOrDefault(t => t.TeacherId == item)
+                    ?? throw new UserExceptions($"Không tồn tại mã giảng viên {item}");
                 var teacher = new TeacherDtos
                               {
                                   TeacherId = findteacher.TeacherId,

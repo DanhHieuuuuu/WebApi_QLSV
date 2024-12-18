@@ -94,7 +94,7 @@ namespace WebApi_QLSV.Services.Implements
             }
             var query = listMonHoc.Where(e =>
                 string.IsNullOrEmpty(input.KeyWord)
-                || e.BoMonId.ToLower().Contains(input.KeyWord.ToLower())
+                || e.TenBoMon.ToLower().Contains(input.KeyWord.ToLower())
             );
             result.TotalItem = query.Count();
             query = query.OrderBy(e => e.BoMonId).Skip(input.Skip()).Take(input.PageSize);
@@ -103,7 +103,6 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
-
         public PageResultDtos<MonHocDetailDto> GetMonHocDetail([FromQuery] FilterDtos input)
         {
             var result = new PageResultDtos<MonHocDetailDto>();
@@ -169,7 +168,7 @@ namespace WebApi_QLSV.Services.Implements
             }
             var query = listMH.Where(e =>
                         string.IsNullOrEmpty(input.KeyWord)
-                        || e.BoMonId.ToLower().Contains(input.KeyWord.ToLower())
+                        || e.MaMonHoc.ToLower().Contains(input.KeyWord.ToLower())
 );
             result.TotalItem = query.Count();
             query = query.OrderBy(e => e.BoMonId).Skip(input.Skip()).Take(input.PageSize);
@@ -178,7 +177,79 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
+        public PageResultDtos<MonHocDetailDto> GetMonHocById([FromQuery] FilterDtos input)
+        {
+            var result = new PageResultDtos<MonHocDetailDto>();
+            var group = from bm in _context.BoMons
+                        join mh in _context.MonHocs on bm.BoMonId equals mh.BoMonId
+                        select new
+                        {
+                            bm.BoMonId,
+                            bm.TenBoMon,
+                            mh.MaMonHoc,
+                            mh.TenMon,
+                            mh.SoTin
+                        };
+            var group3 = from mh in _context.MonHocs
+                         join t_m in _context.Teacher_MonHocs on mh.MaMonHoc equals t_m.MaMonHoc
+                         join t in _context.Teachers on t_m.TeacherId equals t.TeacherId
+                         select new
+                         {
+                             monHocId = mh.MaMonHoc,
+                             teacherId = t.TeacherId,
+                             tenGiangVien = t.TenGiangVien,
+                             email = t.Email,
+                             cccd = t.Cccd,
+                             birthday = t.Birthday,
+                             gioiTinh = t.GioiTinh,
+                             queQUan = t.QueQuan,
+                             image = t.Image
+                         };
+            var group4 = group3.GroupBy(e => e.monHocId).Select(g => new
+            {
+                maMonHoc = g.Key,
+                teacher = g.OrderBy(e => e.tenGiangVien).Select(item1 => new TeacherDtos
+                {
+                    TeacherId = item1.teacherId,
+                    TenGiangVien = item1.tenGiangVien,
+                    Email = item1.email,
+                    Cccd = item1.cccd,
+                    Birthday = item1.birthday,
+                    GioiTinh = item1.gioiTinh,
+                    QueQUan = item1.queQUan,
+                    Image = item1.image,
+                }).ToList()
+            }).ToList();
+            var listMH = new List<MonHocDetailDto>();
+            foreach (var item in group)
+            {
+                var mh = new MonHocDetailDto();
 
+
+                mh.BoMonId = item.BoMonId;
+                mh.MaMonHoc = item.MaMonHoc;
+                mh.TenMon = item.TenMon;
+                mh.SoTin = item.SoTin;
+                foreach (var item1 in group4)
+                {
+                    if (item1.maMonHoc == item.MaMonHoc)
+                    {
+                        mh.TeacherDtos = item1.teacher;
+                    }
+                }
+                listMH.Add(mh);
+
+            }
+            var query = listMH.Where(e =>
+                        string.IsNullOrEmpty(input.KeyWord)
+                        || e.MaMonHoc.ToLower().Equals(input.KeyWord.ToLower()));
+            result.TotalItem = query.Count();
+            query = query.OrderBy(e => e.BoMonId).Skip(input.Skip()).Take(input.PageSize);
+
+            result.Items = query.ToList();
+
+            return result;
+        }
         public PageResultDtos<TeacherDtos> GetTeacherPhuTrach([FromQuery] string maMonHoc, FilterDtos input)
         {
             var result = new PageResultDtos<TeacherDtos>();
@@ -217,7 +288,7 @@ namespace WebApi_QLSV.Services.Implements
                 ?? throw new UserExceptions("Không tồn tại mã bộ môn");
             findMonHoc.TenMon = input.TenMon;
             findMonHoc.SoTin = input.SoTin;
-            findBoMon.BoMonId = input.BoMonId;
+            findMonHoc.BoMonId = input.BoMonId;
             _context.MonHocs.Update(findMonHoc);
             _context.SaveChanges();
             return findMonHoc;
@@ -241,7 +312,7 @@ namespace WebApi_QLSV.Services.Implements
         //            (MonHocs, boMons) => new
         //            {
         //                maBoMon = MonHocs.BoMonId,
-                        
+
         //                tenBoMon = boMons.TenBoMon,
         //                maMonHoc = MonHocs.MaMonHoc,
         //                tenMon = MonHocs.TenMon,
@@ -284,5 +355,37 @@ namespace WebApi_QLSV.Services.Implements
         //    return result;
         //}
 
+        public PageResultDtos<MonHoc> GetMonHocById2([FromQuery] FilterDtos input, List<string> maMonHocs)
+        {
+            var result = new PageResultDtos<MonHoc>();
+            var listMonHoc = new List<MonHoc>();
+            foreach (var item in maMonHocs)
+            {
+                var findMonHoc = _context.MonHocs.FirstOrDefault(t => t.MaMonHoc == item)
+                    ?? throw new UserExceptions($"Không tồn tại mã giảng viên {item}");
+                var monHoc = new MonHoc
+                {
+                    MaMonHoc = findMonHoc.MaMonHoc,
+                    TenMon = findMonHoc.TenMon,
+                    SoTin = findMonHoc.SoTin,
+                    BoMonId = findMonHoc.BoMonId
+                };
+                listMonHoc.Add(monHoc);
+            }
+            var query = listMonHoc.Where(e =>
+                        string.IsNullOrEmpty(input.KeyWord)
+                        || e.TenMon.ToLower().Contains(input.KeyWord.ToLower())
+);
+            result.TotalItem = query.Count();
+
+            query = query
+                .OrderBy(e => e.TenMon)
+                .ThenBy(e => e.BoMonId)
+                .Skip(input.Skip())
+                .Take(input.PageSize);
+
+            result.Items = query.ToList();
+            return result;
+        }
     }
 }

@@ -6,7 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
+using WebApi_QLSV.Dtos.ManagerFd;
 using WebApi_QLSV.Dtos.Student;
+using WebApi_QLSV.Dtos.Teacher;
 using WebApi_QLSV.Entities;
 using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
@@ -45,7 +47,7 @@ namespace WebApi_QLSV.Services.Implements
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string RemoveDiacritics(string text)
+        private static string RemoveDiacritics(string text)
         {
             string[] accentedChars = new string[]
             {
@@ -601,5 +603,135 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
+
+        public Object Login (Login input )
+        {
+            var findStu = _context.Students.FirstOrDefault(x => x.Email == input.Email);
+            var findTea = _context.Teachers.FirstOrDefault(x => x.Email == input.Email);
+            var findMana = _context.Managers.FirstOrDefault(x => x.Email == input.Email);
+
+            if( findStu == null && findTea == null && findMana == null)
+            {
+                throw new UserExceptions("Không tồn tại tài khoản");
+            }
+
+            if( findStu != null)
+            {
+                var student =
+                _context.Students.SingleOrDefault(x => x.Email == input.Email)
+                ?? throw new UserExceptions("Không tồn tại tài khoản");
+
+                bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, student.Password);
+                var token = Createtokens(student.Username);
+                var findNganh = _context.LopQLs.FirstOrDefault(l => l.LopQLId == student.LopQLId);
+                var nganh = _context.Nganhs.FirstOrDefault(n => n.NganhId == findNganh.NganhId);
+                if (isValid)
+                {
+                    var sucess = new ResponseLoginStudentDtos
+                    {
+                        Username = student.Username,
+                        Email = student.Email,
+                        Token = token,
+                        Birthday = student.Birthday,
+                        QueQuan = student.QueQuan,
+                        LopQLId = student.LopQLId,
+                        TenLopQL = findNganh.TenLopQL,
+                        Cccd = student.Cccd,
+                        GioiTinh = student.GioiTinh,
+                        StudentId = student.StudentId,
+                        nganh = nganh.TenNganh,
+                        nganhId = nganh.NganhId,
+                        UrlImage = student.Image,
+                        Role = student.Role,
+                    };
+                    return sucess;
+                }
+                else
+                {
+                    throw new UserExceptions("Không đúng mật khẩu");
+                }
+            }
+            else if( findTea != null)
+            {
+                var teacher =
+                _context.Teachers.SingleOrDefault(x => x.Email == input.Email)
+                ?? throw new UserExceptions("Không tồn tại tài khoản");
+                var findBM = _context.BoMons.FirstOrDefault(x => x.BoMonId == teacher.BoMonId);
+                bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, teacher.Password);
+                var token = Createtokens(teacher.TenGiangVien);
+
+                if (isValid)
+                {
+                    var sucess = new ResponseLoginTeacherDtos
+                    {
+                        TeacherId = teacher.TeacherId,
+                        TenGiangVien = teacher.TenGiangVien,
+                        Email = teacher.Email,
+                        TenBoMon = findBM.TenBoMon,
+                        BoMonId = teacher.BoMonId,
+                        Cccd = teacher.Cccd,
+                        Birthday = teacher.Birthday,
+                        GioiTinh = teacher.GioiTinh,
+                        QueQuan = teacher.QueQuan,
+                        UrlImage = teacher.Image,
+                        Token = token,
+                        Role = teacher.Role,
+                    };
+                    return sucess;
+                }
+                else
+                {
+                    throw new UserExceptions("Không đúng mật khẩu");
+                }
+            }
+            else
+            {
+                var manager =
+                _context.Managers.SingleOrDefault(x => x.Email == input.Email)
+                ?? throw new UserExceptions("Không tồn tại tài khoản");
+
+                bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, manager.Password);
+                var token = Createtokens(manager.Username);
+                if (isValid)
+                {
+                    var sucess = new ResponseLoginManagerDtos
+                    {
+                        ManagerId = manager.ManagerId,
+                        Username = manager.Username,
+                        Email = manager.Email,
+                        Birthday = manager.Birthday,
+                        Cccd = manager.Cccd,
+                        GioiTinh = manager.GioiTinh,
+                        QueQuan = manager.QueQuan,
+                        UrlImage = manager.Image,
+                        Token = token,
+                        Role = manager.Role
+                    };
+                    return sucess;
+                }
+                else
+                {
+                    throw new UserExceptions("Không đúng mật khẩu");
+                }
+            }
+        }
+
+        public void ChangePassword(string email, string Password, string role)
+        {
+            if (role == "Student")
+            {
+                var findStu = _context.Students.FirstOrDefault(x => x.Email == email);
+                findStu.Password = BCrypt.Net.BCrypt.HashPassword(Password);
+                _context.Students.Update(findStu); 
+            }
+            if (role == "Teacher")
+            {
+                var findTea = _context.Teachers.FirstOrDefault(x => x.Email == email);
+                findTea.Password = BCrypt.Net.BCrypt.HashPassword(Password);
+                _context.Teachers.Update(findTea);
+            }
+            _context.SaveChanges();
+        }
+
     }
 }

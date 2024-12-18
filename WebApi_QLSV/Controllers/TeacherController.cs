@@ -25,7 +25,7 @@ namespace WebApi_QLSV.Controllers
             _context = applicationDbContext;
         }
 
-        [Authorize(Roles = "Manager")]
+        //[Authorize(Roles = "Manager")]
         [HttpPost("/Add-teacher")]
         public async Task<IActionResult> AddTeacher2([FromForm] AddTeacherDtos2 input4)
         {
@@ -61,6 +61,19 @@ namespace WebApi_QLSV.Controllers
             {
                 _service.AddTeachertoMonHoc(listTeacher, maMonHoc);
                 return Ok("Thêm thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("/get-teacher-by-id")]
+        public IActionResult GetAllTeacherById([FromQuery] FilterDtos input, List<string> teacherId)
+        {
+            try
+            {
+                return Ok(_service.GetTeacherById(input, teacherId));
             }
             catch (Exception ex)
             {
@@ -139,19 +152,6 @@ namespace WebApi_QLSV.Controllers
             try
             {
                 return Ok(_service.GetAllTeacherMonHoc(input, teacherId));
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("/get-teacher-by-id")]
-        public IActionResult GetAllTeacherById([FromQuery] FilterDtos input,[FromQuery] List<string> teacherId)
-        {
-            try
-            {
-                return Ok(_service.GetTeacherById(input, teacherId));
             }
             catch(Exception ex)
             {

@@ -59,30 +59,22 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
-        public List<BoMonTheoKhoaDtos> GetBoMonTheoKhoa()
+        public List<BoMon> GetBoMonTheoKhoa([FromQuery] string boMonId)
         {
-            var group = _context.BoMons.GroupBy(e => e.KhoaId).Select(
-                g => new
-                {
-                    khoaId = g.Key,
-                    boMon = g.OrderBy(e => e.TenBoMon).ToList(),
-                }
-                );
-            var listBoMon = new List<BoMonTheoKhoaDtos>();
-            foreach (var item in group)
+            var findBoMon = _context.BoMons.FirstOrDefault( b => b.BoMonId == boMonId );
+            var dsBoMon = from bm in _context.BoMons
+                          where bm.KhoaId == findBoMon.KhoaId
+                          select bm;
+
+            var listBoMon = new List<BoMon>();
+            foreach (var item in dsBoMon)
             {
-
-                var newBoMon = new BoMonTheoKhoaDtos
-                {
-                    KhoaId = item.khoaId,
-                    BoMons = item.boMon,
-
-                };
-                listBoMon.Add(newBoMon);
+                listBoMon.Add(item);
 
             }
             return listBoMon;
         }
+
         public BoMon UpdateBoMon(UpdateBoMonDtos input)
         {
             var findBoMon = _context.BoMons.FirstOrDefault(b => b.BoMonId == input.BoMonId)

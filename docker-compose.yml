@@ -1,0 +1,16 @@
+services:
+  webapi_qlsv:
+    image: ${DOCKER_REGISTRY-}webapiqlsv
+    build:
+      context: .
+      dockerfile: WebApi_QLSV/Dockerfile
+    ports:
+      - "7171:8080" 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Data Source=192.168.1.2;Initial Catalog=Demo;User ID=sa;Password=yourStrong(!)Password;Trust Server Certificate=True 
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge

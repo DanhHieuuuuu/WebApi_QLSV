@@ -18,5 +18,7 @@ namespace WebApi_QLSV.Dtos.Student
         public bool? GioiTinh { get; set; }
         public string? UrlImage { get; set; }
         public string? Token { get; set; }
+        public string Role { get; set; }
+
     }
 }

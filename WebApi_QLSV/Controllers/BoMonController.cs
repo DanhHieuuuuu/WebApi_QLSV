@@ -47,11 +47,11 @@ namespace WebApi_QLSV.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpGet("/Get-all-bo-mon-theo-khoa")]
-        public IActionResult GetAllBoMonTheoKhoa()
+        public IActionResult GetAllBoMonTheoKhoa([FromQuery] string boMonId)
         {
             try
             {
-                return Ok(_bomonService.GetBoMonTheoKhoa());
+                return Ok(_bomonService.GetBoMonTheoKhoa(boMonId));
             }
             catch (Exception ex)
             {
