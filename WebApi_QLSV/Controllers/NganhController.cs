@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.NganhFd;
 using WebApi_QLSV.Services.Interfaces;
@@ -16,7 +17,8 @@ namespace WebApi_QLSV.Controllers
             _nganhService = nganhService;
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPost("/Add-nganh")]
         public IActionResult AddNganh(AddNganhDtos input)
         {
@@ -30,7 +32,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpGet("/Get-all-nganh")]
         public IActionResult GetAllNganh([FromQuery] FilterDtos input2)
         {
@@ -44,7 +47,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpGet("/Get-all-nganh-theo-khoa")]
         public IActionResult GetAllNganhTheoKhoa()
         {
@@ -58,7 +62,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPut("/Update-nganh")]
         public IActionResult UpdateNganh(UpdateNganhDtos input)
         {
@@ -72,7 +77,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpDelete("/Delete-nganh")]
         public IActionResult DeleteNganh([FromQuery] string nganhId)
         {

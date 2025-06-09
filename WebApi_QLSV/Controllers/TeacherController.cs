@@ -25,7 +25,8 @@ namespace WebApi_QLSV.Controllers
             _context = applicationDbContext;
         }
 
-        //[Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPost("/Add-teacher")]
         public async Task<IActionResult> AddTeacher2([FromForm] AddTeacherDtos2 input4)
         {
@@ -53,7 +54,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPost("/Add-teacher-to-mon-hoc")]
         public IActionResult AddTeachertoMonHoc( List<string> listTeacher, string maMonHoc)
         {
@@ -159,7 +161,21 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [HttpGet("/find-teacher")]
+        public IActionResult FindTeacher(string teacherId)
+        {
+            try
+            {
+                return Ok(_service.FindTeacherById(teacherId));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPut("/update-image-teacher")]
         public async Task<IActionResult> UpdateImageTeacher([FromForm] AddImageDtos input3)
         {
@@ -196,7 +212,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager,Teacher")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager,Teacher" })]
         [HttpPut("/Update-teacher")]
         public async Task<IActionResult> UpdateTeacher([FromQuery] string teacherId, [FromForm] UpdateTeacherDtos input)
         {
@@ -211,7 +228,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpDelete("/Delete-teacher")]
         public IActionResult DeleteTeacher([FromQuery] string teacherId)
         {
@@ -226,7 +244,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpDelete("/Delete-teacher-khoi-mon-hoc")]
         public IActionResult DeleteTeacherToMonHoc([FromQuery] string teacherId, string maMonHoc)
         {

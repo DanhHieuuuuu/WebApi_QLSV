@@ -11,6 +11,7 @@ namespace WebApi_QLSV.Services.Interfaces
         Task<Teacher> AddTeacher2([FromForm] AddTeacherDtos2 input);
         void AddTeachertoMonHoc( List<string> listTeacher, string maMonHoc);
         void DeleteTeacher(string teacherId);
+        TeacherDtos FindTeacherById(string teacherId);
         PageResultDtos<TeacherDtos> GetAll([FromQuery] FilterDtos input);
         List<TeacherDtos> GetAllTeacherInBoMon( string? boMonId);
         List<TeacherDtos> GetAllTeacherInKhoa(string? khoaId);

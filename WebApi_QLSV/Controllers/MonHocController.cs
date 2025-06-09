@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.MonHocFd;
 using WebApi_QLSV.Services.Interfaces;
@@ -17,7 +18,8 @@ namespace WebApi_QLSV.Controllers
             _monHocService = monHocService;
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPost("/Add-Mon-Hoc")]
         public IActionResult AddMonHoc(AddMonHocDtos input)
         {
@@ -109,7 +111,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPut("/Update-mon-hoc")]
         public IActionResult UpdateMonHoc(UpdateMonHoc input)
         {
@@ -123,7 +126,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpDelete("/Delete-mon-hoc")]
         public IActionResult DeleteMonHoc([FromQuery] string maMonHoc)
         {

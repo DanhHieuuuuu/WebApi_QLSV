@@ -1,7 +1,9 @@
-﻿using System.Text;
+﻿using System.Reflection;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Services.Implements;
 using WebApi_QLSV.Services.Interfaces;
@@ -73,6 +75,51 @@ namespace WebApi_QLSV
                     }
                 );
             });
+            // Thêm Swagger vào DI container
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "API Documentation",
+                    Version = "v1"
+                });
+
+                // Thêm cấu hình hỗ trợ Bearer Token
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and your token in the text input below.\n\nExample: `Bearer eyJhbGciOiJIUzI1NiIsIn...`"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
+
+            // configure comment swagger
+            builder.Services.AddSwaggerGen(options =>
+            {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            });
+
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
             app.UseCors("AllowAllOrigins");

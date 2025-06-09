@@ -697,6 +697,24 @@ namespace WebApi_QLSV.Services.Implements
             result.Items = query.ToList();
             return result;
         }
-    
+        
+        public TeacherDtos FindTeacherById(string teacherId)
+        {
+            var find = _context.Teachers.FirstOrDefault(t => t.TeacherId == teacherId);
+
+            var teacher = new TeacherDtos
+            {
+                TeacherId = find.TeacherId,
+                Birthday = find.Birthday,
+                BoMonId = find.BoMonId,
+                Cccd = find.Cccd,
+                Email = find.Email,
+                GioiTinh = find.GioiTinh,
+                Image = find.Image,
+                QueQUan = find.QueQuan,
+                TenGiangVien = find.TenGiangVien
+            };
+            return teacher;
+        }
     }
 }

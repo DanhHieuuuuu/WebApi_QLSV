@@ -25,13 +25,15 @@ namespace WebApi_QLSV.Services.Implements
             _context = context;
             _jwtsettings = jwtsettings;
         }
-        private string Createtokens(string username)
+        private string Createtokens(string username, string role, DateTime birthday, bool? gioiTinh, string id)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, "Student")
+                new Claim("UserName", username),
+                new Claim("Role", role),
+                new Claim("Birthday", birthday.ToString()),
+                new Claim("Giới tính", gioiTinh.ToString()),
+                new Claim("ID", id)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtsettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -207,7 +209,7 @@ namespace WebApi_QLSV.Services.Implements
                 ?? throw new UserExceptions("Không tồn tại tài khoản");
 
             bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, student.Password);
-            var token = Createtokens(student.Username);
+            var token = Createtokens(student.Username, student.Role, student.Birthday, student.GioiTinh, student.StudentId);
             var findNganh = _context.LopQLs.FirstOrDefault(l => l.LopQLId == student.LopQLId);
             var nganh = _context.Nganhs.FirstOrDefault(n => n.NganhId == findNganh.NganhId);
             if (isValid)
@@ -622,7 +624,7 @@ namespace WebApi_QLSV.Services.Implements
                 ?? throw new UserExceptions("Không tồn tại tài khoản");
 
                 bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, student.Password);
-                var token = Createtokens(student.Username);
+                var token = Createtokens(student.Username, student.Role, student.Birthday, student.GioiTinh, student.StudentId);
                 var findNganh = _context.LopQLs.FirstOrDefault(l => l.LopQLId == student.LopQLId);
                 var nganh = _context.Nganhs.FirstOrDefault(n => n.NganhId == findNganh.NganhId);
                 if (isValid)
@@ -658,7 +660,7 @@ namespace WebApi_QLSV.Services.Implements
                 ?? throw new UserExceptions("Không tồn tại tài khoản");
                 var findBM = _context.BoMons.FirstOrDefault(x => x.BoMonId == teacher.BoMonId);
                 bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, teacher.Password);
-                var token = Createtokens(teacher.TenGiangVien);
+                var token = Createtokens(teacher.TenGiangVien, teacher.Role, teacher.Birthday, teacher.GioiTinh, teacher.TeacherId);
 
                 if (isValid)
                 {
@@ -691,7 +693,7 @@ namespace WebApi_QLSV.Services.Implements
                 ?? throw new UserExceptions("Không tồn tại tài khoản");
 
                 bool isValid = BCrypt.Net.BCrypt.Verify(input.Password, manager.Password);
-                var token = Createtokens(manager.Username);
+                var token = Createtokens(manager.Username, manager.Role, manager.Birthday, manager.GioiTinh, manager.ManagerId);
                 if (isValid)
                 {
                     var sucess = new ResponseLoginManagerDtos
@@ -733,5 +735,25 @@ namespace WebApi_QLSV.Services.Implements
             _context.SaveChanges();
         }
 
+        public StudentDtos FindStudent(string studentId)
+        {
+            var find = _context.Students.FirstOrDefault(s => s.StudentId == studentId);
+            var findLop = _context.LopQLs.FirstOrDefault(l => l.LopQLId == find.LopQLId);
+            var student = new StudentDtos
+            {
+                StudentId = find.StudentId,
+                Username = find.Username,
+                Cccd = find.Cccd,
+                Email = find.Email,
+                LopQLId = find.LopQLId,
+                TenLopQL = findLop.TenLopQL,
+                GioiTinh = find.GioiTinh,
+                Birthday = find.Birthday,
+                QueQuan = find.QueQuan,
+                NienKhoa = find.NienKhoa,
+                Image = find.Image,
+            };
+            return student;
+        }
     }
 }

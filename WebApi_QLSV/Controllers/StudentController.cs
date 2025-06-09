@@ -1,15 +1,20 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using WebApi_QLSV.DbContexts;
 using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.Student;
+using WebApi_QLSV.Entities;
 using WebApi_QLSV.Exceptions;
 using WebApi_QLSV.Services.Interfaces;
 
 namespace WebApi_QLSV.Controllers
 {
+    /// <summary>
+    /// Controller để quản lý người dùng.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class StudentController : ControllerBase
@@ -24,7 +29,8 @@ namespace WebApi_QLSV.Controllers
         }
 
 
-        //[Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPost("/Add-student")]
         public async Task<IActionResult> AddStudent2([FromForm] AddStudentDtos2 input3)
         {
@@ -118,7 +124,13 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
+        /// <summary>
+        /// Danh sách sinh viên trong từng class
+        /// </summary>
+        /// <param name="input3">Phân trang</param>
+        /// <returns></returns>
         [HttpGet("/Get-all-student-3")]
+        [ProducesResponseType(typeof(FilterDtos), (int)HttpStatusCode.OK)]
         public IActionResult GetAllStudentInClass([FromQuery] FilterDtos input3)
         {
             try
@@ -126,6 +138,27 @@ namespace WebApi_QLSV.Controllers
                 return Ok(_studentServices.GetAllStudentInClass(input3));
             }
             catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Tìm kiếm student
+        /// </summary>
+        /// <param name="studentId">Mã sinh viên</param>
+        /// <returns>hello</returns>
+        [HttpGet("/Find-student")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+
+        public IActionResult FindStudent(string studentId)
+        {
+            try
+            {
+                return Ok(_studentServices.FindStudent(studentId));
+            }
+            catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -208,8 +241,10 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpDelete("/Delete-student")]
+
         public IActionResult DeleteStudent([FromQuery] string studentId)
         {
             try
@@ -222,5 +257,7 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }

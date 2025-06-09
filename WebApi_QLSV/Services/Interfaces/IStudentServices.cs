@@ -20,6 +20,7 @@ namespace WebApi_QLSV.Services.Interfaces
         PageResultDtos<StudentDtos> GetAllStudentById([FromQuery] FilterDtos input, List<string> studentId);
         object Login(Login input);
         void ChangePassword(string email, string Password, string role);
+        StudentDtos FindStudent(string studentId);
         //PageResultDtos<StudentInClassDtos> GetAllStudentInLopHP([FromQuery] FilterDtos input, [FromQuery] string ClassName);
     }
 }

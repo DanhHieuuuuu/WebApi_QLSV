@@ -25,7 +25,7 @@ namespace WebApi_QLSV.Services.Implements
             var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId);
             if(findKhoa != null)
             {
-                throw new UserExceptions("Trung mã khoa");
+                throw new UserExceptions("Trùng mã khoa");
             };
             var result = new Khoa
             {
@@ -122,6 +122,7 @@ namespace WebApi_QLSV.Services.Implements
 
             return result;
         }
+
         public Khoa UpdateKhoa(UpdateKhoaDtos input)
         {
             var findKhoa = _context.Khoas.FirstOrDefault(k => k.KhoaId == input.KhoaId);

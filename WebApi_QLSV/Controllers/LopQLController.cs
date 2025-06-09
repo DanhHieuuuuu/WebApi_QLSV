@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.ClassFd;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Services.Interfaces;
@@ -18,7 +19,8 @@ namespace WebApi_QLSV.Controllers
         }
 
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPost("/Add-lop-quan-li")]
         public IActionResult AddLopQL(AddLopQLDtos input)
         {
@@ -32,7 +34,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpGet("/Get-all-Class")]
         public IActionResult GetAllLopQL([FromQuery] FilterDtos input2)
         {
@@ -46,7 +49,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpGet("/Get-all-lopQL-theo-nganh")]
         public IActionResult GetAllLopQLTheoNganh([FromQuery] FilterDtos input3)
         {
@@ -60,7 +64,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager,Teacher")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager,Teacher" })]
         [HttpPut("/Update-lop-quan-li")]
         public IActionResult UpdateLopQL(UpdateLopQLDtos input)
         {
@@ -74,7 +79,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpDelete("/Delete-lop-quan-li")]
         public IActionResult DeleteLopQL([FromQuery] string lopQLId)
         {

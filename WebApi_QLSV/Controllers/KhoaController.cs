@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApi_QLSV.Dtos;
 using WebApi_QLSV.Dtos.Common;
 using WebApi_QLSV.Dtos.KhoaFd;
 using WebApi_QLSV.Services.Interfaces;
@@ -17,7 +18,8 @@ namespace WebApi_QLSV.Controllers
             _khoaService = khoaService;
         }
 
-        [Authorize(Roles="Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPost("/Add-khoa")]
         public IActionResult AddKhoa([FromBody] AddKhoaDtos input)
         {
@@ -30,8 +32,9 @@ namespace WebApi_QLSV.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
-        [Authorize(Roles = "Manager")]
+
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpGet("/Get-all-khoa")]
         public IActionResult GetAllKhoa([FromQuery] FilterDtos input2)
         {
@@ -59,7 +62,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpPut("/Update-khoa")]
         public IActionResult UpdateKhoa(UpdateKhoaDtos input)
         {
@@ -73,7 +77,8 @@ namespace WebApi_QLSV.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize]
+        [TypeFilter(typeof(AuthorizationFilter), Arguments = new Object[] { "Manager" })]
         [HttpDelete("/Delete-khoa")]
         public IActionResult DeleteKhoa(string khoaId)
         {
